@@ -25,7 +25,7 @@ const SignUp = ({ navigation }) => {
   const HandleSubmit = async () => {
     setLoading(true);
     const response = await fetch(
-      `http://192.168.1.178:5000/api/auth/newuser`,
+      `http://182.168.2.198:5000/api/auth/newuser`,
       {
         method: "POST",
         headers: {
