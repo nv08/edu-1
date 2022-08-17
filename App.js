@@ -13,10 +13,11 @@ import WorkProfile from "./src/screens/Studen/Workprofile.js";
 import TalentH from "./src/screens/Teache/TalentH.js";
 import UserForm from "./src/components/UserForm";
 import AccountW from "./src/components/AccountW";
-
+import React from "react";
 
 function App() {
   const Stack = createNativeStackNavigator();
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Get Start">
@@ -41,16 +42,15 @@ function App() {
           component={SignC}
         />
         <Stack.Screen
-          options={{ headerTitleAlign: "center", headerTransparent: true, headerShown: false }}
+          options={{ headerTitleAlign: "center", headerTransparent: true }}
           name="Hire Login"
           component={LogC}
         />
         <Stack.Screen
-        options={{ headerTitleAlign: "center", headerTransparent: true }}
-        name="UserForm"
-        component={UserForm}
-      />
-   
+          options={{ headerTitleAlign: "center", headerTransparent: true }}
+          name="UserForm"
+          component={UserForm}
+        />
 
         <Stack.Screen
           options={{
@@ -62,15 +62,11 @@ function App() {
           component={WorkProfile}
         />
         <Stack.Screen
-          options={{ headerTitleAlign: "center", headerBackVisible: false, headerShown: false }}
+          options={{ headerTitleAlign: "center", headerBackVisible: false }}
           name="Find Talent"
           component={TalentH}
         />
-      
-       
-       
-       
-       
+
         <Stack.Screen
           options={{
             headerTitleAlign: "center",
@@ -81,7 +77,6 @@ function App() {
           name="AccountW"
           component={AccountW}
         />
-     
       </Stack.Navigator>
     </NavigationContainer>
   );
