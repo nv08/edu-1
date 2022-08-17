@@ -25,7 +25,11 @@ const SignUp = ({ navigation }) => {
   const HandleSubmit = async () => {
     setLoading(true);
     const response = await fetch(
+<<<<<<< HEAD
       `http://172.198.403.105:5000/api/auth/newuser`,
+=======
+      `http://182.168.2.198:5000/api/auth/newuser`,
+>>>>>>> 97abebc948a9179108087328ab31155c44408464
       {
         method: "POST",
         headers: {
