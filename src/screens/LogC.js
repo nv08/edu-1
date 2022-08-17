@@ -30,7 +30,7 @@ import {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ Email, password }),
-      });
+      }); 
      
       const json = await response.json();
   
