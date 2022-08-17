@@ -11,7 +11,7 @@ import {
  
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-
+import Chat from "../components/Chat";
 
 
 const GetStart = ({ navigation }) => {
@@ -42,6 +42,9 @@ const GetStart = ({ navigation }) => {
               <Text style={{textAlign: 'center', color: "white", }}>Student Profile</Text>
               </TouchableOpacity>
             </View>
+          </View>
+          <View>
+          <Chat />
           </View>
         </ScrollView>
       </SafeAreaView>

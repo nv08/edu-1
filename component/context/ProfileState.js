@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import profileContext from "./profileContext";
 
 const ProfileState = (props) => {
-  const host = "http://192.168.1.178:5000";
+  const host = "http://172.198.403.105:5000";
   const profileInitial = [];
 
   const [profiles, setProfiles] = useState(profileInitial);

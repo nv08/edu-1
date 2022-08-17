@@ -30,7 +30,7 @@ import {
   };
   
   const WorkProfile = ({ navigation }) => {
-    const host = "https://globalbackend.herokuapp.com";
+    const host = "http://192.168.43.185:5000";
     const { profiles, userProfile } = useContext(profileContext);
     const [refreshing, setRefreshing] = useState(false);
   

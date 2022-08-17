@@ -15,14 +15,14 @@ const SignC = ({navigation}) => {
 
   const HandleSubmit = async() => { 
     setLoading(true); 
-    const response = await fetch(`http://192.168.1.178:5000/api/auth/newuser`, {
+    const response = await fetch(`http://172.198.403.105:5000/api/auth/newuser`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({cname, Email,rollno, password})
     });
-    if(!cname || !Email || !phone || !password){
+    if(!cname || !Email || !rollno || !password){
       setLoading(false);
     }
     const json = await response.json()
@@ -70,7 +70,7 @@ const SignC = ({navigation}) => {
     ]);
   } else if (rollno.length < 5) {
     setLoading(false);
-    Alert.alert("Error!", "Please enter a valid phone number", [
+    Alert.alert("Error!", "Please enter a valid roll number", [
       {
         text: "Ok",
         onPress: () => null,
