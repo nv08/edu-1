@@ -4,13 +4,11 @@ import {
     View,
     ScrollView,
     Alert,
-    Image,
     TouchableOpacity,
     TextInput,
   } from "react-native";
   import AsyncStorage from "@react-native-async-storage/async-storage";
   import React, { useState } from "react";
-  import { LinearGradient } from "expo-linear-gradient";
   import SubmitBu from "../components/SubmitBu";
   
   
@@ -24,7 +22,7 @@ import {
   
     const HandleSubmit = async () => {
       setLoading(true);
-      const response = await fetch(`http://172.198.403.105:5000/api/auth/login`, {
+      const response = await fetch(`http://192.168.1.178:5000/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,12 +65,7 @@ import {
     };
   
     return (
-      <LinearGradient
-        colors={["#E0ACBC", "#F1D9E0", "transparent"]}
-        style={styles.container}
-        start={{ x: 0, y: 0.5 }}
-        end={{ x: 0, y: 0.9 }}
-      >
+     
         <View>
           <ScrollView>
             <View style={styles.LogmainS}>
@@ -127,7 +120,7 @@ import {
             </View>
           </ScrollView>
         </View>
-      </LinearGradient>
+     
     );
   };
   
@@ -192,14 +185,14 @@ import {
       paddingVertical: 15,
     },
     LogAc: {
-      color: "#008000",
+      color: "black",
       textAlign: "center",
       fontSize: 15,
       paddingVertical: 10,
       
     },
     LogSuP: {
-      color: "#FF0099",
+      color: "black",
       textAlign: "center",
       margin: 5,
       fontWeight: "bold",

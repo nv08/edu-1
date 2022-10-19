@@ -1,54 +1,54 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   StyleSheet,
   Text,
   View,
-  Image,
-  Button,
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
- 
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import Chat from "../components/Chat";
 
 
 const GetStart = ({ navigation }) => {
-  
-
   return (
-    <LinearGradient
-      colors={["#E0ACBC", "#F1D9E0", "transparent"]}
-      style={styles.container}
-      start={{ x: 0, y: 0.5 }}
-      end={{ x: 0, y: 0.9 }}
-    >
+  
       <SafeAreaView>
         <ScrollView>
-        
           <View style={styles.flx}>
-            
-           
             <View style={styles.cenbtn}>
-             
-              <TouchableOpacity style={{backgroundColor: "green",borderRadius:20, height:40, justifyContent: "center", }} onPress={() => navigation.navigate("Hire Login")} >
-              <Text style={{textAlign: 'center', color: "white",}}>FIND Student</Text>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "black",
+                 
+                  height: 40,
+                  justifyContent: "center",
+                }}
+                onPress={() => navigation.navigate("Hire Login")}
+              >
+                <Text style={{ textAlign: "center", color: "white" }}>
+                  Teacher 
+                </Text>
               </TouchableOpacity>
             </View>
             <View style={styles.cenbtn}>
-              
-              <TouchableOpacity style={{backgroundColor: "green",borderRadius:20, height:40,  justifyContent: "center"}} onPress={() => navigation.navigate("Login")} >
-              <Text style={{textAlign: 'center', color: "white", }}>Student Profile</Text>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "black",
+                 
+                  height: 40,
+                  justifyContent: "center",
+                }}
+                onPress={() => navigation.navigate("Login")}
+              >
+                <Text style={{ textAlign: "center", color: "white" }}>
+                  Student Form
+                </Text>
               </TouchableOpacity>
             </View>
-          </View>
-          <View>
-          <Chat />
           </View>
         </ScrollView>
       </SafeAreaView>
-    </LinearGradient>
+    
   );
 };
 
@@ -71,7 +71,6 @@ const styles = StyleSheet.create({
     color: "#008000",
     fontSize: 24,
     marginTop: 15,
-   
   },
   getimg: {
     width: 250,
@@ -89,7 +88,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#FF0099",
     fontSize: 15,
-   
   },
   create: {
     textAlign: "center",
@@ -97,15 +95,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     paddingHorizontal: 50,
     paddingVertical: 5,
-    
   },
 
   cenbtn: {
     paddingVertical: 5,
     paddingHorizontal: 50,
-   
   },
-  flx:{
+  flx: {
     marginTop: 150,
   },
   btnrad: {

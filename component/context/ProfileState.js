@@ -5,11 +5,9 @@ import React, { useState } from "react";
 import profileContext from "./profileContext";
 
 const ProfileState = (props) => {
-<<<<<<< HEAD
-  const host = "http://172.198.403.105:5000";
-=======
-  const host = "http://182.168.2.198:5000";
->>>>>>> 97abebc948a9179108087328ab31155c44408464
+
+  const host = "http://192.168.1.178:5000";
+
   const profileInitial = [];
 
   const [profiles, setProfiles] = useState(profileInitial);
@@ -52,7 +50,6 @@ const ProfileState = (props) => {
   const addProfile = async (
     cname,
     email,
-
     phone,
     city,
     rollno,

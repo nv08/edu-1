@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 import React from "react";
-import { AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -42,7 +41,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "green",
+    backgroundColor: "black",
     height: 50,
     borderRadius: 100,
   },

@@ -3,51 +3,43 @@ import {
   Text,
   View,
   TextInput,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  BackHandler,
-  Alert,
-  Button,
   FlatList,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useState, useContext, useEffect } from "react";
-import profileContext from "../../../component/context/profileContext";
-import { Ionicons } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
-import { FontAwesome5 } from "@expo/vector-icons";
+import React, { useState, } from "react";
 import CMenu from "../../components/CMenu";
 
-import SubmitBu from "../../components/SubmitBu";
-
-const TalentH = ({ navigation, route }) => {
-  // const { getProfile } = useContext(profileContext);
-  const [profiles, setProfiles] = useState("");
+const TalentH = () => {
+  const [profiles, setProfiles] = useState([]);
 
   const [skillsTerm, setSkills] = useState("");
   const [rollnoTerm, setRollno] = useState("");
   const [cityTerm, setCity] = useState("");
 
-  const filterData = async () => {
-    const response = await fetch(
-      `http://192.168.43.185:5000/api/profile/fetchallprofiles`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": await AsyncStorage.getItem("token"),
-        },
-        body: JSON.stringify({
-          skills: skillsTerm,
-          rollno: rollnoTerm,
-          city: cityTerm,
-        }),
-      }
-    );
+  const filterData = () => {
+    AsyncStorage.getItem("token").then(token => {
+      fetch(
+        `http://192.168.1.178:5000/api/profile/fetchallprofiles`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": token,
+          },
+          body: JSON.stringify({
+            skills: skillsTerm,
+            rollno: rollnoTerm,
+            city: cityTerm,
+          }),
+        }
+      ).then(res => res.json())
+      .then((res) => setProfiles(res));
+    });
+    
 
-    const responseJson = await response.json();
-    setProfiles(responseJson);
+    // const responseJson = await response.json();
+    // console.log(responseJson);
+    // setProfiles(responseJson);
   };
 if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
   filterData();
@@ -57,30 +49,7 @@ if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
   //   getProfile();
   // }, []);
 
-  useEffect(() => {
-    filterData();
-    const backAction = () => {
-      Alert.alert("Hold on!", "Are you sure you want to close the app?", [
-        {
-          text: "Cancel",
-          onPress: () => null,
-          style: "cancel",
-        },
-        { text: "YES", onPress: () => BackHandler.exitApp() },
-      ]);
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
-    const unsubscribe = navigation.addListener("focus", () => {
-      filterData();
-    });
-
-    return () => backHandler.remove();
-  }, []);
+ 
 
   
   return (
@@ -98,7 +67,7 @@ if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
             autoCapitalize="none"
             autoCorrect={false}
             value={skillsTerm}
-            placeholder="Type Skill..."
+            placeholder="Type Subject..."
             onChangeText={(actualdata) => {
               setSkills(actualdata);
               filterData();
@@ -140,7 +109,7 @@ if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
         renderItem={({ item }) => (
           <View key={item._id}>
             <View style={styles.boxes}>
-              <TouchableOpacity>
+              <View>
                 <Text
                   style={{
                     textAlign: "center",
@@ -161,7 +130,7 @@ if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
                     alignItems: "center",
                   }}
                 >
-                  <FontAwesome name="flag-o" size={24} color="green" />
+                 <Text>Email</Text>
                   <Text style={styles.textStyle}>{item.email} </Text>
                 </View>
 
@@ -175,7 +144,7 @@ if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
                     alignItems: "center",
                   }}
                 >
-                  <FontAwesome name="flag-o" size={24} color="green" />
+                 <Text>City</Text>
                   <Text style={styles.textStyle}>{item.city} </Text>
                 </View>
                 <View
@@ -188,7 +157,7 @@ if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
                     alignItems: "center",
                   }}
                 >
-                  <FontAwesome5 name="address-book" size={24} color="green" />
+                 <Text>Roll No.</Text>
                   <Text style={styles.textStyle}>{item.rollno}</Text>
                 </View>
                 <View
@@ -201,7 +170,7 @@ if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
                     alignItems: "center",
                   }}
                 >
-                  <Ionicons name="md-location-sharp" size={24} color="green" />
+                  <Text>Address</Text>
                   <Text style={styles.textStyle}>{item.address}</Text>
                 </View>
                 <View
@@ -212,14 +181,12 @@ if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
                     alignItems: "center",
                   }}
                 >
-                  <Text style={styles.textStyle0}>Skills</Text>
+                  <Text style={styles.textStyle0}>Subjects</Text>
                   <Text style={styles.textStyle}>{item.skills}</Text>
                 </View>
 
-                <View>
-                  <Text style={styles.CSen}>View Profile</Text>
-                </View>
-              </TouchableOpacity>
+               
+              </View>
             </View>
           </View>
         )}
@@ -241,26 +208,11 @@ if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
 
 const styles = StyleSheet.create({
   boxes: {
-    borderWidth: 1,
-    margin: 5,
-    borderColor: "green",
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    backgroundColor: "white",
-    margin: 20,
+   
 
-    borderRadius: 20,
-
-    padding: 35,
-
-    shadowColor: "green",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.35,
-    shadowRadius: 4,
-    elevation: 5,
+   
+   
+  
   },
 
   CliImg: {
@@ -268,7 +220,6 @@ const styles = StyleSheet.create({
     height: 50,
   },
   Tcolor: {
-    backgroundColor: "#E0ACBC",
     paddingVertical: 30,
   },
   textStyle: {
@@ -276,9 +227,15 @@ const styles = StyleSheet.create({
 
     fontSize: 15,
   },
+  rowView:{
+    width: '100%',
+    flexDirection: 'row',
+    alignItems:'center',
+    justifyContent:'space-evenly'
+  }, 
   textStyle0: {
     fontSize: 17,
-    color: "green",
+    color: "black",
     fontWeight: "bold",
     paddingVertical: 5,
   },

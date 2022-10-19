@@ -15,6 +15,7 @@ import UserForm from "./src/components/UserForm";
 import AccountW from "./src/components/AccountW";
 import React from "react";
 
+
 function App() {
   const Stack = createNativeStackNavigator();
 
@@ -37,12 +38,12 @@ function App() {
           component={SignIn}
         />
         <Stack.Screen
-          options={{ headerTitleAlign: "center", headerTransparent: true }}
+          options={{ headerTitleAlign: "center", headerTransparent: true, headerTitle:"Teacher signup" }}
           name="Hire Signup"
           component={SignC}
         />
         <Stack.Screen
-          options={{ headerTitleAlign: "center", headerTransparent: true }}
+          options={{ headerTitleAlign: "center", headerTransparent: true, headerTitle:"Teacher Login" }}
           name="Hire Login"
           component={LogC}
         />
@@ -62,7 +63,7 @@ function App() {
           component={WorkProfile}
         />
         <Stack.Screen
-          options={{ headerTitleAlign: "center", headerBackVisible: false }}
+          options={{ headerTitleAlign: "center", headerBackVisible: false, headerTitle:"Find student" }}
           name="Find Talent"
           component={TalentH}
         />
@@ -77,6 +78,7 @@ function App() {
           name="AccountW"
           component={AccountW}
         />
+    
       </Stack.Navigator>
     </NavigationContainer>
   );

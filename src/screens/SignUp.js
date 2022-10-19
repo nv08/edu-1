@@ -2,14 +2,12 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   ScrollView,
   TextInput,
   TouchableOpacity,
   Alert,
 } from "react-native";
 import React, { useState } from "react";
-import { LinearGradient } from "expo-linear-gradient";
 
 import SubmitBu from "../components/SubmitBu";
 
@@ -25,11 +23,8 @@ const SignUp = ({ navigation }) => {
   const HandleSubmit = async () => {
     setLoading(true);
     const response = await fetch(
-<<<<<<< HEAD
-      `http://172.198.403.105:5000/api/auth/newuser`,
-=======
-      `http://182.168.2.198:5000/api/auth/newuser`,
->>>>>>> 97abebc948a9179108087328ab31155c44408464
+      `http://192.168.1.178:5000/api/auth/newuser`,
+
       {
         method: "POST",
         headers: {
@@ -110,12 +105,7 @@ const SignUp = ({ navigation }) => {
   };
 
   return (
-    <LinearGradient
-      colors={["#E0ACBC", "#F1D9E0", "transparent"]}
-      style={styles.container}
-      start={{ x: 0, y: 0.5 }}
-      end={{ x: 0, y: 0.9 }}
-    >
+
       <ScrollView>
         <View style={styles.UpTop}>
         
@@ -174,7 +164,7 @@ const SignUp = ({ navigation }) => {
                 color: "grey",
               }}
             >
-              Phone*
+              roll no*
             </Text>
             <TextInput
               style={styles.InptUp3}
@@ -224,7 +214,6 @@ const SignUp = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </LinearGradient>
   );
 };
 
@@ -304,19 +293,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 20,
     fontWeight: "bold",
-    color: "#FF0099",
+    color: "black",
     marginVertical: 10,
     backgroundColor: "green",
   },
   txtS4: {
-    color: "#008000",
+    color: "black",
     textAlign: "center",
     fontSize: 14,
     paddingBottom: 15,
     
   },
   txtS3: {
-    color: "#FF0099",
+    color: "black",
     textAlign: "center",
     margin: 5,
     fontWeight: "bold",

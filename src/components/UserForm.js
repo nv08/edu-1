@@ -66,18 +66,13 @@ import {
     };
   
     return (
-      <LinearGradient
-        colors={["#E0ACBC", "#F1D9E0", "transparent"]}
-        style={styles.container}
-        start={{ x: 0, y: 0.5 }}
-        end={{ x: 0, y: 0.9 }}
-      >
+      <View>
         {children ? (
           children
         ) : (
           <View>
             <View>
-              <Text style={styles.PubT}>Publish Your Profile</Text>
+              <Text style={styles.PubT}>Studnet Form</Text>
             </View>
   
             <View style={styles.marg}>
@@ -134,7 +129,6 @@ import {
                 onChangeText={(text) => setCity(text)}
                 
                 placeholder="Write Your city"
-                id="price"
               />
             </View>
         
@@ -148,7 +142,6 @@ import {
                   maxLength={10}
                   onChangeText={(text) => setRollno(text)}
                   placeholder="Write Your Roll no (e.g 123456789)"
-                  id="postal"
                 />
               </View>
               <View style={styles.CliePut}>
@@ -165,7 +158,7 @@ import {
               />
             </View>
             <View style={styles.CliePut}>
-            <Text style={{fontSize: 14,  marginTop: 5, fontWeight: "bold",color:"grey"}}>Skills*</Text>
+            <Text style={{fontSize: 14,  marginTop: 5, fontWeight: "bold",color:"grey"}}>Subjects*</Text>
             <TextInput
               style={styles.Skilt}
               autoCapitalize="none"
@@ -175,7 +168,7 @@ import {
               numberOfLines={3}
               onChangeText={(text) => setSkills(text)}
               maxLength={80}
-              placeholder="Write Your Skills (Engineer, computer science etc)"
+              placeholder="Write Your Subject"
               id="skills"
             />
           </View>
@@ -196,14 +189,14 @@ import {
               </View>
           
               <View style={{ paddingBottom: 20, paddingTop: 15 }}>
-                <TouchableOpacity style={styles.Logbt} disabled={cname.length < 3 || email.length < 8 || email.includes("@") === false || phone.length < 6 || rollno.length < 1 || city.length < 2 || address.length < 5 || skills.length < 5 || description.length < 100 } onPress={Handleclick}>
+                <TouchableOpacity style={styles.Logbt} disabled={cname.length < 3 || email.length < 8 || email.includes("@") === false || phone.length < 6 || rollno.length < 1 || city.length < 2 || address.length < 5 || skills.length < 5 || description.length < 50 } onPress={Handleclick}>
                   <Text style={styles.Logbt1} >PUBLISH</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
         )}
-      </LinearGradient>
+      </View>
     );
   };
   const styles = StyleSheet.create({
@@ -248,7 +241,7 @@ import {
       backgroundColor: "white",
     },
     Logbt: {
-      backgroundColor: "green",
+      backgroundColor: "black",
       marginHorizontal: 20,
       borderRadius: 20,
     },
