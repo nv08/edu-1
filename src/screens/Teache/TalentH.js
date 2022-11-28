@@ -6,7 +6,7 @@ import {
   FlatList,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import CMenu from "../../components/CMenu";
 import io from 'socket.io-client'
 
@@ -33,32 +33,48 @@ const TalentH = () => {
             city: cityTerm,
           }),
         }
-      ).then(res =>res.json())
-      .then((res) => setProfiles(res));
+      ).then(res => res.json())
+        .then((res) => setProfiles(res));
     });
-    
+
 
     // const responseJson = await response.json();
     // console.log(responseJson);
     // setProfiles(responseJson);
   };
-// if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
-//   filterData();
-// }
+  // if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
+  //   filterData();
+  // }
 
   //  useEffect(() => {
   //   getProfile();
   // }, []);
+
   const sock = io("https://eduback.onrender.com");
+  // const sendMsg = useCallback(() => {
+  //   console.log(profiles, "ppppp");
+  //   sock.emit('send-message', { receiverId: profiles.length > 0 ? profiles[0].user : '', data: 'Hello' })
+  // }, [profiles])
+
   useEffect(() => {
-    filterData()
-    sock.connect();
-    // fetchLastMessages();
-    const sendMsg = () => {
-      sock.emit('send-message',{receiverId:profiles && profiles.user,data:'Hello'})
+
+    if (profiles.length === 0) {
+      filterData()
+    } else {
+      console.log("heeere")
+      // AsyncStorage.getItem('userId').then((d)=>{
+
+      // })
+      sock.connect();
+      sock.emit('send-message', { receiverId: profiles[0].user, data: 'Hello' })
     }
-    sendMsg();
-  }, []);
+
+
+    // fetchLastMessages();
+
+    // sendMsg();
+  }, [profiles]);
+
 
   return (
     <View
@@ -111,100 +127,100 @@ const TalentH = () => {
       </View>
       {
         profiles.length > 0 ? (
-      <FlatList
-        data={profiles}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <View key={item._id}>
-            <View style={styles.boxes}>
-              <View>
-                <Text
-                  style={{
-                    textAlign: "center",
-                    fontSize: 20,
+          <FlatList
+            data={profiles}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <View key={item._id}>
+                <View style={styles.boxes}>
+                  <View>
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        fontSize: 20,
 
-                    color: "black",
-                  }}
-                >
-                  {item.cname}
-                </Text>
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingHorizontal: 5,
-                    paddingVertical: 3,
-                    alignItems: "center",
-                  }}
-                >
-                 <Text>Email</Text>
-                  <Text style={styles.textStyle}>{item.email} </Text>
-                </View>
+                        color: "black",
+                      }}
+                    >
+                      {item.cname}
+                    </Text>
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        paddingHorizontal: 5,
+                        paddingVertical: 3,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text>Email</Text>
+                      <Text style={styles.textStyle}>{item.email} </Text>
+                    </View>
 
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingHorizontal: 5,
-                    paddingVertical: 3,
-                    alignItems: "center",
-                  }}
-                >
-                 <Text>City</Text>
-                  <Text style={styles.textStyle}>{item.city} </Text>
-                </View>
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingHorizontal: 5,
-                    paddingVertical: 3,
-                    alignItems: "center",
-                  }}
-                >
-                 <Text>Roll No.</Text>
-                  <Text style={styles.textStyle}>{item.rollno}</Text>
-                </View>
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingHorizontal: 5,
-                    paddingVertical: 3,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text>Address</Text>
-                  <Text style={styles.textStyle}>{item.address}</Text>
-                </View>
-                <View
-                  style={{
-                    display: "flex",
-                    paddingHorizontal: 5,
-                    paddingVertical: 3,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text style={styles.textStyle0}>Subjects</Text>
-                  <Text style={styles.textStyle}>{item.skills}</Text>
-                </View>
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        paddingHorizontal: 5,
+                        paddingVertical: 3,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text>City</Text>
+                      <Text style={styles.textStyle}>{item.city} </Text>
+                    </View>
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        paddingHorizontal: 5,
+                        paddingVertical: 3,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text>Roll No.</Text>
+                      <Text style={styles.textStyle}>{item.rollno}</Text>
+                    </View>
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        paddingHorizontal: 5,
+                        paddingVertical: 3,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text>Address</Text>
+                      <Text style={styles.textStyle}>{item.address}</Text>
+                    </View>
+                    <View
+                      style={{
+                        display: "flex",
+                        paddingHorizontal: 5,
+                        paddingVertical: 3,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={styles.textStyle0}>Subjects</Text>
+                      <Text style={styles.textStyle}>{item.skills}</Text>
+                    </View>
 
-               
+
+                  </View>
+                </View>
               </View>
-            </View>
-          </View>
-        )}
-        onEndReachedThreshold={0.01}
-      />
-      )
-      :
-      (
-          <Text style={{color:"black",textAlign:'center',fontSize:15,fontWeight:'bold', }}>No Results Found...</Text>
-      )
+            )}
+            onEndReachedThreshold={0.01}
+          />
+        )
+          :
+          (
+            <Text style={{ color: "black", textAlign: 'center', fontSize: 15, fontWeight: 'bold', }}>No Results Found...</Text>
+          )
       }
       {/* </ScrollView> */}
       <View>
@@ -216,11 +232,11 @@ const TalentH = () => {
 
 const styles = StyleSheet.create({
   boxes: {
-   
 
-   
-   
-  
+
+
+
+
   },
 
   CliImg: {
@@ -235,12 +251,12 @@ const styles = StyleSheet.create({
 
     fontSize: 15,
   },
-  rowView:{
+  rowView: {
     width: '100%',
     flexDirection: 'row',
-    alignItems:'center',
-    justifyContent:'space-evenly'
-  }, 
+    alignItems: 'center',
+    justifyContent: 'space-evenly'
+  },
   textStyle0: {
     fontSize: 17,
     color: "black",

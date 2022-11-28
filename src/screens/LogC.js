@@ -35,6 +35,7 @@ import {
       console.log(json);
       if (json.success) {
         await AsyncStorage.setItem("token", json.authtoken);
+        await AsyncStorage.setItem("userId", json.data.user.id);
         Alert.alert("Success!", "Sign in successfully. Welcome!", [
           {
             text: "Ok",
