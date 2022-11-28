@@ -1,14 +1,8 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  FlatList,
-} from "react-native";
+import { StyleSheet, Text, View, TextInput, FlatList } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect, useCallback } from "react";
 import CMenu from "../../components/CMenu";
-import io from 'socket.io-client'
+import io from "socket.io-client";
 
 const TalentH = () => {
   const [profiles, setProfiles] = useState([]);
@@ -18,25 +12,22 @@ const TalentH = () => {
   const [cityTerm, setCity] = useState("");
 
   const filterData = () => {
-    AsyncStorage.getItem("token").then(token => {
-      fetch(
-        `https://eduback.onrender.com/api/profile/fetchallprofiles`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "auth-token": token,
-          },
-          body: JSON.stringify({
-            skills: skillsTerm,
-            rollno: rollnoTerm,
-            city: cityTerm,
-          }),
-        }
-      ).then(res => res.json())
+    AsyncStorage.getItem("token").then((token) => {
+      fetch(`https://eduback.onrender.com/api/profile/fetchallprofiles`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": token,
+        },
+        body: JSON.stringify({
+          skills: skillsTerm,
+          rollno: rollnoTerm,
+          city: cityTerm,
+        }),
+      })
+        .then((res) => res.json())
         .then((res) => setProfiles(res));
     });
-
 
     // const responseJson = await response.json();
     // console.log(responseJson);
@@ -57,24 +48,24 @@ const TalentH = () => {
   // }, [profiles])
 
   useEffect(() => {
-
     if (profiles.length === 0) {
-      filterData()
+      filterData();
     } else {
-      console.log("heeere")
+      console.log("heeere");
       // AsyncStorage.getItem('userId').then((d)=>{
 
       // })
       sock.connect();
-      sock.emit('send-message', { receiverId: profiles[0].user, data: 'Hello' })
+      sock.emit("send-message", {
+        receiverId: profiles[0].user,
+        data: "Hello",
+      });
     }
-
 
     // fetchLastMessages();
 
     // sendMsg();
   }, [profiles]);
-
 
   return (
     <View
@@ -125,103 +116,106 @@ const TalentH = () => {
           />
         </View>
       </View>
-      {
-        profiles.length > 0 ? (
-          <FlatList
-            data={profiles}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <View key={item._id}>
-                <View style={styles.boxes}>
-                  <View>
-                    <Text
-                      style={{
-                        textAlign: "center",
-                        fontSize: 20,
+      {profiles.length > 0 ? (
+        <FlatList
+          data={profiles}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <View key={item._id}>
+              <View style={styles.boxes}>
+                <View>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      fontSize: 20,
 
-                        color: "black",
-                      }}
-                    >
-                      {item.cname}
-                    </Text>
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        paddingHorizontal: 5,
-                        paddingVertical: 3,
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text>Email</Text>
-                      <Text style={styles.textStyle}>{item.email} </Text>
-                    </View>
+                      color: "black",
+                    }}
+                  >
+                    {item.cname}
+                  </Text>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 5,
+                      paddingVertical: 3,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text>Email</Text>
+                    <Text style={styles.textStyle}>{item.email} </Text>
+                  </View>
 
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        paddingHorizontal: 5,
-                        paddingVertical: 3,
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text>City</Text>
-                      <Text style={styles.textStyle}>{item.city} </Text>
-                    </View>
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        paddingHorizontal: 5,
-                        paddingVertical: 3,
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text>Roll No.</Text>
-                      <Text style={styles.textStyle}>{item.rollno}</Text>
-                    </View>
-                    <View
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        paddingHorizontal: 5,
-                        paddingVertical: 3,
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text>Address</Text>
-                      <Text style={styles.textStyle}>{item.address}</Text>
-                    </View>
-                    <View
-                      style={{
-                        display: "flex",
-                        paddingHorizontal: 5,
-                        paddingVertical: 3,
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text style={styles.textStyle0}>Subjects</Text>
-                      <Text style={styles.textStyle}>{item.skills}</Text>
-                    </View>
-
-
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 5,
+                      paddingVertical: 3,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text>City</Text>
+                    <Text style={styles.textStyle}>{item.city} </Text>
+                  </View>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 5,
+                      paddingVertical: 3,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text>Roll No.</Text>
+                    <Text style={styles.textStyle}>{item.rollno}</Text>
+                  </View>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 5,
+                      paddingVertical: 3,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text>Address</Text>
+                    <Text style={styles.textStyle}>{item.address}</Text>
+                  </View>
+                  <View
+                    style={{
+                      display: "flex",
+                      paddingHorizontal: 5,
+                      paddingVertical: 3,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={styles.textStyle0}>Subjects</Text>
+                    <Text style={styles.textStyle}>{item.skills}</Text>
                   </View>
                 </View>
               </View>
-            )}
-            onEndReachedThreshold={0.01}
-          />
-        )
-          :
-          (
-            <Text style={{ color: "black", textAlign: 'center', fontSize: 15, fontWeight: 'bold', }}>No Results Found...</Text>
-          )
-      }
+            </View>
+          )}
+          onEndReachedThreshold={0.01}
+        />
+      ) : (
+        <Text
+          style={{
+            color: "black",
+            textAlign: "center",
+            fontSize: 15,
+            fontWeight: "bold",
+          }}
+        >
+          No Results Found...
+        </Text>
+      )}
       {/* </ScrollView> */}
       <View>
         <CMenu />
@@ -231,13 +225,7 @@ const TalentH = () => {
 };
 
 const styles = StyleSheet.create({
-  boxes: {
-
-
-
-
-
-  },
+  boxes: {},
 
   CliImg: {
     width: 50,
@@ -252,10 +240,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   rowView: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-evenly'
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
   },
   textStyle0: {
     fontSize: 17,

@@ -6,8 +6,6 @@ import {
   RefreshControl,
 } from "react-native";
 
-
-
 import profileContext from "../../../component/context/profileContext";
 import React, { useState, useContext, useEffect, useCallback } from "react";
 import Menu from "../../components/Menu";
@@ -16,7 +14,7 @@ import UserForm from "../../components/UserForm";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
-import io from 'socket.io-client'
+import io from "socket.io-client";
 //import axios from "axios";
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -40,27 +38,24 @@ const WorkProfile = () => {
   const sock = io("https://eduback.onrender.com");
 
   useEffect(() => {
-    console.log(profiles, "pppp")
+    console.log(profiles, "pppp");
     if (profiles.length > 0) {
-      sock.emit("new-user-add", profiles[0].user)
-
+      sock.emit("new-user-add", profiles[0].user);
     }
-
-  }, [profiles])
+  }, [profiles]);
 
   useEffect(() => {
     sock.connect();
     const receiveMsg = () => {
-      sock.on('recieve-message', (payload) => {
-        console.log(payload)
-      })
-    }
-    receiveMsg()
+      sock.on("recieve-message", (payload) => {
+        console.log(payload);
+      });
+    };
+    receiveMsg();
     return () => {
-      sock.off('recieve-message')
-    }
-
-  }, [sock])
+      sock.off("recieve-message");
+    };
+  }, [sock]);
 
   return (
     <View
@@ -80,11 +75,8 @@ const WorkProfile = () => {
             return (
               <View key={item._id}>
                 <UserForm>
-
-
                   <View>
                     <View style={{ marginTop: 10 }}>
-
                       <Text
                         style={{
                           textAlign: "center",
@@ -233,13 +225,11 @@ const styles = StyleSheet.create({
     fontSize: 17,
     paddingVertical: 5,
     fontWeight: "bold",
-
   },
   ISle: {
     color: "grey",
     fontSize: 17,
     paddingVertical: 5,
-
   },
 });
 
