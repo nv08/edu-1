@@ -6,8 +6,9 @@ import {
   FlatList,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useState, } from "react";
+import React, { useState,useEffect } from "react";
 import CMenu from "../../components/CMenu";
+import io from 'socket.io-client'
 
 const TalentH = () => {
   const [profiles, setProfiles] = useState([]);
@@ -19,7 +20,7 @@ const TalentH = () => {
   const filterData = () => {
     AsyncStorage.getItem("token").then(token => {
       fetch(
-        `http://192.168.1.178:5000/api/profile/fetchallprofiles`,
+        `https://eduback.onrender.com/api/profile/fetchallprofiles`,
         {
           method: "POST",
           headers: {
@@ -32,7 +33,7 @@ const TalentH = () => {
             city: cityTerm,
           }),
         }
-      ).then(res => res.json())
+      ).then(res =>res.json())
       .then((res) => setProfiles(res));
     });
     
@@ -41,17 +42,24 @@ const TalentH = () => {
     // console.log(responseJson);
     // setProfiles(responseJson);
   };
-if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
-  filterData();
-}
+// if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
+//   filterData();
+// }
 
   //  useEffect(() => {
   //   getProfile();
   // }, []);
+  const sock = io("https://eduback.onrender.com");
+  useEffect(() => {
+    filterData()
+    sock.connect();
+    // fetchLastMessages();
+    const sendMsg = () => {
+      sock.emit('send-message',{receiverId:profiles && profiles.user,data:'Hello'})
+    }
+    sendMsg();
+  }, []);
 
- 
-
-  
   return (
     <View
       style={{

@@ -23,7 +23,7 @@ import {
       setLoading(true);
       try {
         const response = await fetch(
-          `http://192.168.1.178:5000/api/auth/login`,
+          `https://eduback.onrender.com/api/auth/login`,
           {
             method: "POST",
             headers: {

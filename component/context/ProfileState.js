@@ -6,7 +6,7 @@ import profileContext from "./profileContext";
 
 const ProfileState = (props) => {
 
-  const host = "http://192.168.1.178:5000";
+  const host = "https://eduback.onrender.com";
 
   const profileInitial = [];
 
