@@ -29,6 +29,9 @@ const CMenu = () => {
         <TouchableOpacity onPress={() => navigation.navigate("Find Talent")}>
         <MaterialIcons name="home" size={42} color="white" />
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("Inbox")}>
+        <MaterialIcons name="forum" size={42} color="white" />
+        </TouchableOpacity>
         <TouchableOpacity onPress={signOut}>
           <MaterialIcons name="logout" size={34} color="white" />
         </TouchableOpacity>

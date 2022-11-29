@@ -3,10 +3,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState } from "react";
 
 import profileContext from "./profileContext";
+import { HOST } from "../../src/constants";
 
 const ProfileState = (props) => {
-
-  const host = "https://eduback.onrender.com";
 
   const profileInitial = [];
 
@@ -15,7 +14,7 @@ const ProfileState = (props) => {
   //fetch one user profile
 
   const userProfile = async (id) => {
-    const response = await fetch(`${host}/api/profile/fetchuserprofile/${id}`, {
+    const response = await fetch(`${HOST}/api/profile/fetchuserprofile/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

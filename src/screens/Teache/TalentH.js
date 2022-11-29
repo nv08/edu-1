@@ -1,19 +1,21 @@
-import { StyleSheet, Text, View, TextInput, FlatList } from "react-native";
+import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect, useCallback } from "react";
 import CMenu from "../../components/CMenu";
 import io from "socket.io-client";
+import { HOST } from "../../constants";
+import { useNavigation } from "@react-navigation/native";
 
 const TalentH = () => {
   const [profiles, setProfiles] = useState([]);
-
+  const navigation = useNavigation();
   const [skillsTerm, setSkills] = useState("");
   const [rollnoTerm, setRollno] = useState("");
   const [cityTerm, setCity] = useState("");
 
   const filterData = () => {
     AsyncStorage.getItem("token").then((token) => {
-      fetch(`https://eduback.onrender.com/api/profile/fetchallprofiles`, {
+      fetch(`${HOST}/api/profile/fetchallprofiles`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,7 +43,7 @@ const TalentH = () => {
   //   getProfile();
   // }, []);
 
-  const sock = io("https://eduback.onrender.com");
+  const sock = io(HOST);
   // const sendMsg = useCallback(() => {
   //   console.log(profiles, "ppppp");
   //   sock.emit('send-message', { receiverId: profiles.length > 0 ? profiles[0].user : '', data: 'Hello' })
@@ -198,6 +200,9 @@ const TalentH = () => {
                     <Text style={styles.textStyle0}>Subjects</Text>
                     <Text style={styles.textStyle}>{item.skills}</Text>
                   </View>
+                  <TouchableOpacity style={styles.buttonStyles} onPress={()=>navigation.navigate('Inbox',{activeUserId:'test'})}>
+                    Chat Now
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -272,5 +277,11 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: "white",
   },
+  buttonStyles:{
+    alignSelf: 'center',
+    borderWidth: 1,
+    paddingHorizontal: 4,
+    paddingVertical: 2
+  }
 });
 export default TalentH;

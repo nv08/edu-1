@@ -14,6 +14,7 @@ import TalentH from "./src/screens/Teache/TalentH.js";
 import UserForm from "./src/components/UserForm";
 import AccountW from "./src/components/AccountW";
 import React from "react";
+import Inbox from "./src/components/Inbox";
 
 
 function App() {
@@ -77,6 +78,17 @@ function App() {
           }}
           name="AccountW"
           component={AccountW}
+        />
+
+        <Stack.Screen
+          options={{
+            headerTitleAlign: "center",
+            headerTransparent: true,
+            headerBackVisible: true,
+            title: "Inbox",
+          }}
+          name="Inbox"
+          component={Inbox}
         />
     
       </Stack.Navigator>

@@ -11,6 +11,7 @@ import {
   import React, { useState, useContext, useEffect } from "react";
   
   import SubmitBu from "../components/SubmitBu";
+import { HOST } from "../constants";
   
   const SignIn = ({ navigation }) => {
     const { id } = useState(id);
@@ -23,7 +24,7 @@ import {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://eduback.onrender.com/api/auth/login`,
+          `${HOST}/api/auth/login`,
           {
             method: "POST",
             headers: {

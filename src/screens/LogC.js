@@ -10,6 +10,7 @@ import {
   import AsyncStorage from "@react-native-async-storage/async-storage";
   import React, { useState } from "react";
   import SubmitBu from "../components/SubmitBu";
+import { HOST } from "../constants";
   
   
   
@@ -22,7 +23,7 @@ import {
   
     const HandleSubmit = async () => {
       setLoading(true);
-      const response = await fetch(`https://eduback.onrender.com/api/auth/login`, {
+      const response = await fetch(`${HOST}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

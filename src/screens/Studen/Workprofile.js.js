@@ -15,6 +15,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import io from "socket.io-client";
+import { HOST } from "../../constants";
 //import axios from "axios";
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -35,7 +36,7 @@ const WorkProfile = () => {
     wait(2000).then(() => setRefreshing(false));
   }, []);
 
-  const sock = io("https://eduback.onrender.com");
+  const sock = io(HOST);
 
   useEffect(() => {
     console.log(profiles, "pppp");

@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, TextInput,  TouchableOpacity, ScrollView, Alert
 import React,{useState} from 'react'
 
 import SubmitBu from '../components/SubmitBu';
+import { HOST } from '../constants';
 
 
 
@@ -14,7 +15,7 @@ const SignC = ({navigation}) => {
 
   const HandleSubmit = async() => { 
     setLoading(true); 
-    const response = await fetch(`https://eduback.onrender.com/api/auth/newuser`, {
+    const response = await fetch(`${HOST}/api/auth/newuser`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
