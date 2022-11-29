@@ -43,7 +43,7 @@ import { HOST } from "../constants";
   
         if (json.success) {
           await AsyncStorage.setItem("token", json.authtoken);
-  
+          await AsyncStorage.setItem("userId", json.data.user.id);
          
           navigation.navigate("Profile");
           Alert.alert("Success!", "Sign in successfully. Welcome!", [

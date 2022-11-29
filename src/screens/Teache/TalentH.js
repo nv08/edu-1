@@ -1,8 +1,14 @@
-import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect, useCallback } from "react";
 import CMenu from "../../components/CMenu";
-import io from "socket.io-client";
 import { HOST } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
 
@@ -30,44 +36,68 @@ const TalentH = () => {
         .then((res) => res.json())
         .then((res) => setProfiles(res));
     });
-
-    // const responseJson = await response.json();
-    // console.log(responseJson);
-    // setProfiles(responseJson);
   };
-  // if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
-  //   filterData();
-  // }
 
-  //  useEffect(() => {
-  //   getProfile();
-  // }, []);
+  // useEffect(() => {
+  //   if (profiles.length > 0) {
+  //     sock.emit("new-user-add", profiles[0].user);
+  //   }
+  // }, [profiles]);
 
-  const sock = io(HOST);
-  // const sendMsg = useCallback(() => {
-  //   console.log(profiles, "ppppp");
-  //   sock.emit('send-message', { receiverId: profiles.length > 0 ? profiles[0].user : '', data: 'Hello' })
-  // }, [profiles])
+  // useEffect(() => {
+  //   sock.connect();
+  //   const receiveMsg = () => {
+  //     c
+  //   };
+  //   receiveMsg();
+  //   return () => {
+  //     sock.off("recieve-message");
+  //   };
+  // }, [sock]);
 
   useEffect(() => {
     if (profiles.length === 0) {
       filterData();
-    } else {
-      console.log("heeere");
-      // AsyncStorage.getItem('userId').then((d)=>{
-
-      // })
-      sock.connect();
-      sock.emit("send-message", {
-        receiverId: profiles[0].user,
-        data: "Hello",
-      });
     }
-
-    // fetchLastMessages();
-
-    // sendMsg();
   }, [profiles]);
+  const isChatExist = async (teacherId, stuId) => {
+    const token = await AsyncStorage.getItem("token");
+    const data = await fetch(`${HOST}/api/chat/find/${teacherId}/${stuId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+    });
+
+    const result = await data.json();
+    if (result) return true;
+    return false;
+  };
+
+  const handleChatNowHandler = async (studentId) => {
+    AsyncStorage.getItem("userId").then(async (teacherId) => {
+      // check if chat exist, if not then create chat
+      const chatExist = await isChatExist(teacherId, studentId);
+      console.log(chatExist);
+      if (!chatExist) {
+        AsyncStorage.getItem("token").then((token) => {
+          fetch(`${HOST}/api/chat/createchat`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "auth-token": token,
+            },
+            body: JSON.stringify({
+              senderId: teacherId,
+              receiverId: studentId,
+            }),
+          });
+        });
+      }
+      navigation.navigate("Inbox", { activeUserId: studentId });
+    });
+  };
 
   return (
     <View
@@ -200,8 +230,11 @@ const TalentH = () => {
                     <Text style={styles.textStyle0}>Subjects</Text>
                     <Text style={styles.textStyle}>{item.skills}</Text>
                   </View>
-                  <TouchableOpacity style={styles.buttonStyles} onPress={()=>navigation.navigate('Inbox',{activeUserId:'test'})}>
-                    Chat Now
+                  <TouchableOpacity
+                    style={styles.buttonStyles}
+                    onPress={() => handleChatNowHandler(item.user)}
+                  >
+                    <Text> Chat Now</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -277,11 +310,11 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: "white",
   },
-  buttonStyles:{
-    alignSelf: 'center',
+  buttonStyles: {
+    alignSelf: "center",
     borderWidth: 1,
-    paddingHorizontal: 4,
-    paddingVertical: 2
-  }
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
 });
 export default TalentH;

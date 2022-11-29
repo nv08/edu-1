@@ -36,28 +36,6 @@ const WorkProfile = () => {
     wait(2000).then(() => setRefreshing(false));
   }, []);
 
-  const sock = io(HOST);
-
-  useEffect(() => {
-    console.log(profiles, "pppp");
-    if (profiles.length > 0) {
-      sock.emit("new-user-add", profiles[0].user);
-    }
-  }, [profiles]);
-
-  useEffect(() => {
-    sock.connect();
-    const receiveMsg = () => {
-      sock.on("recieve-message", (payload) => {
-        console.log(payload);
-      });
-    };
-    receiveMsg();
-    return () => {
-      sock.off("recieve-message");
-    };
-  }, [sock]);
-
   return (
     <View
       style={{
