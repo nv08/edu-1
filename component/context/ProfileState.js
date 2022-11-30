@@ -31,7 +31,7 @@ const ProfileState = (props) => {
   //here is the fetch all profiles
   const getProfile = async () => {
     const response = await fetch(
-      `${host}/api/profile/fetchallprofiles`,
+      `${HOST}/api/profile/fetchallprofiles`,
       {
         method: "GET",
         headers: {
@@ -56,7 +56,7 @@ const ProfileState = (props) => {
     skills,
     description
   ) => {
-    const response = await fetch(`${host}/api/profile/addprofiles`, {
+    const response = await fetch(`${HOST}/api/profile/addprofiles`, {
       method: "POST",
 
       headers: {

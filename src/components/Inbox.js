@@ -1,6 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  StatusBar,
+} from "react-native";
 import { io } from "socket.io-client";
 import { HOST } from "../constants";
 import ChatRoom from "./ChatRoom";
@@ -49,6 +56,7 @@ const Inbox = (props) => {
     sock.emit("send-message", {
       receiverId: userId,
       data: msg,
+      senderId: currentUserId,
     });
     AsyncStorage.getItem("token").then((token) => {
       fetch(`${HOST}/api/message/sendmessage`, {
@@ -66,8 +74,29 @@ const Inbox = (props) => {
     });
   };
 
+  const renderItem = ({ item: chat, index }) => {
+    let member;
+    if (currentUserId !== chat.members[0]) {
+      member = chat.members[0];
+    } else {
+      member = chat.members[1];
+    }
+
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          setUserId(member);
+        }}
+        key={index}
+        style={styles.item}
+      >
+        <Text>{member}</Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
-    <View>
+    <View style={{flex:1}}>
       {userId ? (
         <ChatRoom
           sendMessage={sendMessage}
@@ -75,34 +104,31 @@ const Inbox = (props) => {
           socket={sock}
         />
       ) : (
-        <View>
-          {chats.map((chat, i) => (
-            <View key={i}>
-              {currentUserId !== chat.members[0] ? (
-                <TouchableOpacity
-                  style={{ marginTop: 200 }}
-                  onPress={() => {
-                    setUserId(chat.members[0]);
-                  }}
-                >
-                  <Text>{chat.members[0]}</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  style={{ marginTop: 200 }}
-                  onPress={() => {
-                    setUserId(chat.members[1]);
-                  }}
-                >
-                  <Text>{chat.members[1]}</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          ))}
+        <View style={styles.container}>
+          <FlatList data={chats} renderItem={renderItem} />
         </View>
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 100,
+    borderColor: "red",
+    // borderWidth:1,
+    padding: 5,
+  },
+  item: {
+    backgroundColor: "#3498db",
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  title: {
+    fontSize: 32,
+  },
+});
 
 export default Inbox;
