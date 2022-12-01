@@ -75,27 +75,37 @@ const TalentH = () => {
     return false;
   };
 
-  const handleChatNowHandler = async (studentId) => {
-    AsyncStorage.getItem("userId").then(async (teacherId) => {
-      // check if chat exist, if not then create chat
-      const chatExist = await isChatExist(teacherId, studentId);
-      console.log(chatExist);
-      if (!chatExist) {
-        AsyncStorage.getItem("token").then((token) => {
-          fetch(`${HOST}/api/chat/createchat`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "auth-token": token,
-            },
-            body: JSON.stringify({
-              senderId: teacherId,
-              receiverId: studentId,
-            }),
+  const handleChatNowHandler = async (item) => {
+    const studentId = item.user;
+    const studentName = item.name;
+    AsyncStorage.getItem("userId").then((teacherId) => {
+      AsyncStorage.getItem("name").then((teacherName) => {
+        // check if chat exist, if not then create chat
+        const chatExist = isChatExist(teacherId, studentId).then(res => res);
+        console.log(chatExist);
+        if (!chatExist) {
+          AsyncStorage.getItem("token").then((token) => {
+            fetch(`${HOST}/api/chat/createchat`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "auth-token": token,
+              },
+              body: JSON.stringify({
+                senderDetails: {
+                  id: teacherId,
+                  name: teacherName
+                },
+                receiverDetails: {
+                  id: studentId,
+                  name: studentName
+                }
+              }),
+            });
           });
-        });
-      }
-      navigation.navigate("Inbox", { activeUserId: studentId });
+        }
+        navigation.navigate("Inbox", { activeUserId: studentId });
+      });
     });
   };
 
@@ -232,7 +242,7 @@ const TalentH = () => {
                   </View>
                   <TouchableOpacity
                     style={styles.buttonStyles}
-                    onPress={() => handleChatNowHandler(item.user)}
+                    onPress={() => handleChatNowHandler(item)}
                   >
                     <Text> Chat Now</Text>
                   </TouchableOpacity>

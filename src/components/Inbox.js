@@ -25,9 +25,9 @@ const Inbox = (props) => {
     });
   }, []);
   useEffect(() => {
-    AsyncStorage.getItem("userId").then((teacherId) => {
+    AsyncStorage.getItem("userId").then((userId) => {
       AsyncStorage.getItem("token").then((token) => {
-        fetch(`${HOST}/api/chat/${teacherId}`, {
+        fetch(`${HOST}/api/chat/${userId}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -76,6 +76,7 @@ const Inbox = (props) => {
 
   const renderItem = ({ item: chat, index }) => {
     let member;
+    // now sender Details & receiver details coming
     if (currentUserId !== chat.members[0]) {
       member = chat.members[0];
     } else {
