@@ -77,12 +77,11 @@ const TalentH = () => {
 
   const handleChatNowHandler = async (item) => {
     const studentId = item.user;
-    const studentName = item.name;
+    const studentName = item.cname;
     AsyncStorage.getItem("userId").then((teacherId) => {
-      AsyncStorage.getItem("name").then((teacherName) => {
+      AsyncStorage.getItem("name").then(async (teacherName) => {
         // check if chat exist, if not then create chat
-        const chatExist = isChatExist(teacherId, studentId).then(res => res);
-        console.log(chatExist);
+        const chatExist = await isChatExist(teacherId, studentId);
         if (!chatExist) {
           AsyncStorage.getItem("token").then((token) => {
             fetch(`${HOST}/api/chat/createchat`, {
@@ -94,12 +93,12 @@ const TalentH = () => {
               body: JSON.stringify({
                 senderDetails: {
                   id: teacherId,
-                  name: teacherName
+                  name: teacherName,
                 },
                 receiverDetails: {
                   id: studentId,
-                  name: studentName
-                }
+                  name: studentName,
+                },
               }),
             });
           });

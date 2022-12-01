@@ -11,23 +11,24 @@ import {
 import { io } from "socket.io-client";
 import { HOST } from "../constants";
 import ChatRoom from "./ChatRoom";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const sock = io(HOST);
 const Inbox = (props) => {
-  const [userId, setUserId] = useState("");
+  const [activeUserId, setActiveUserId] = useState("");
   const [chats, setChats] = useState([]);
   const [currentUserId, setCurrentUserId] = useState("");
 
   useEffect(() => {
-    AsyncStorage.getItem("userId").then((userId) => {
-      setCurrentUserId(userId);
-      sock.emit("new-user-add", userId);
+    AsyncStorage.getItem("userId").then((activeUserId) => {
+      setCurrentUserId(activeUserId);
+      sock.emit("new-user-add", activeUserId);
     });
   }, []);
   useEffect(() => {
     if (currentUserId) {
       AsyncStorage.getItem("token").then((token) => {
-        fetch(`${HOST}/api/chat/${userId}/${currentUserId}`, {
+        fetch(`${HOST}/api/chat/${currentUserId}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -42,19 +43,18 @@ const Inbox = (props) => {
   useEffect(() => {
     if (props.route && props.route.params) {
       const { activeUserId } = props.route.params;
-      setUserId(activeUserId || "");
+      setActiveUserId(activeUserId || "");
     }
   }, [props]);
 
   useEffect(() => {
     sock.connect();
-    // switching socket off on unmount
     return () => sock.off();
   }, []);
 
   const sendMessage = (msg) => {
     sock.emit("send-message", {
-      receiverId: userId,
+      receiverId: activeUserId,
       data: msg,
       senderId: currentUserId,
     });
@@ -66,9 +66,9 @@ const Inbox = (props) => {
           "auth-token": token,
         },
         body: JSON.stringify({
-          chatId: userId,
+          chatId: activeUserId,
           senderId: currentUserId,
-          receiverId: userId,
+          receiverId: activeUserId,
           text: msg,
         }),
       });
@@ -77,32 +77,41 @@ const Inbox = (props) => {
 
   const renderItem = ({ item: chat, index }) => {
     let member;
-    // now sender Details & receiver details coming
-    if (currentUserId !== chat.members[0]) {
-      member = chat.members[0];
+    if (currentUserId !== chat.senderDetails.id) {
+      member = chat.senderDetails;
     } else {
-      member = chat.members[1];
+      member = chat.receiverDetails;
     }
 
     return (
-      <TouchableOpacity
-        onPress={() => {
-          setUserId(member);
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
-        key={index}
-        style={styles.item}
       >
-        <Text>{member}</Text>
-      </TouchableOpacity>
+        <MaterialIcons name="account-circle" size={64} />
+        <TouchableOpacity
+          onPress={() => {
+            setActiveUserId(member.id);
+          }}
+          key={index}
+          style={styles.item}
+        >
+          <Text style={{fontSize: 20, color:'white'}}>{member.name}</Text>
+        </TouchableOpacity>
+      </View>
     );
   };
 
   return (
     <View style={{ flex: 1 }}>
-      {userId ? (
+      {activeUserId ? (
         <ChatRoom
           sendMessage={sendMessage}
-          currentUserId={userId}
+          activeUserId={activeUserId}
           socket={sock}
         />
       ) : (
@@ -118,15 +127,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 100,
-    borderColor: "red",
-    // borderWidth:1,
-    padding: 5,
+    padding: 20,
   },
   item: {
     backgroundColor: "#3498db",
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
+    fontSize: 20,
+    borderRadius: 10,
+    width: "80%",
   },
   title: {
     fontSize: 32,

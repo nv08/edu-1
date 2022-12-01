@@ -9,10 +9,11 @@ import {
   ScrollView,
 } from "react-native";
 import { HOST } from "../constants";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const ChatRoom = (props) => {
-  const { sendMessage, currentUserId, socket } = props;
-
+  const { sendMessage, activeUserId, socket } = props;
+  const [currentUserId, setCurrentUserId] = useState("");
   const [msg, setMsg] = useState("");
   const [chatroomData, setChatroomData] = useState([]);
   const MsgChangeHandler = (e) => {
@@ -20,57 +21,73 @@ const ChatRoom = (props) => {
   };
 
   useEffect(() => {
-    AsyncStorage.getItem("token").then((token) => {
-      const text = [];
-      fetch(`${HOST}/api/message/${currentUserId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": token,
-        },
-      })
-        .then((res) => res.json())
-        .then((res) => setChatroomData([...res.map((c) => c.text)])); //extract messages from here and set in chatroomdata);
+    AsyncStorage.getItem("userId").then((userId) => {
+      setCurrentUserId(userId);
+      AsyncStorage.getItem("token").then((token) => {
+        fetch(`${HOST}/api/message/${userId}/${activeUserId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": token,
+          },
+        })
+          .then((res) => res.json())
+          .then((res) => setChatroomData(res)); //extract messages from here and set in chatroomdata);
+      });
     });
   }, []);
 
   useEffect(() => {
     socket.on("recieve-message", (payload) => {
-      const { data } = payload;
-      setChatroomData([...chatroomData, data]);
+      if (payload.senderId === activeUserId) {
+        const msgObj = {
+          senderId: payload.senderId,
+          receiverId: payload.receiverId,
+          text: payload.data,
+        };
+        setChatroomData([...chatroomData, msgObj]);
+      }
     });
-  }, [chatroomData]);
+  }, [chatroomData, activeUserId, currentUserId]);
 
-  const Receiver = ({msg}) => {
+  const Receiver = ({ msg }) => {
     return (
       <View style={styles.messageRecieverBox}>
-        <Text>{msg}</Text>
+        <Text style={{ fontSize: 15 }}>{msg}</Text>
       </View>
     );
   };
 
-  const Sender = ({msg}) => {
+  const Sender = ({ msg }) => {
     return (
       <View style={styles.messageSenderBox}>
-        <Text>{msg}</Text>
+        <Text style={{ fontSize: 15 }}>{msg}</Text>
       </View>
     );
+  };
+
+  const onMessageSend = (msg) => {
+    sendMessage(msg);
+    const msgObj = {
+      senderId: currentUserId,
+      receiverId: activeUserId,
+      text: msg,
+    };
+    setChatroomData([...chatroomData, msgObj]);
+    setMsg("");
   };
 
   return (
-    <View style={{ flex: 1, borderWidth: 1, borderColor: "green" }}>
-      <ScrollView style={{ borderWidth: 1, borderColor: "red", marginTop: 80 }}>
+    <View style={{ flex: 1 }}>
+      <ScrollView style={{ marginTop: 80 }}>
         <View>
-          <Receiver msg="hello"/>
-          <Sender msg="hi" />
-          <Sender msg="how r u?" />
-          <Receiver msg="I am good"/>
-          <Sender msg="Send me an assignment" />
-          <Receiver msg="Ok"/>
-          {/* {chatroomData.map((chat) => {
-            console.log(chat, "vvvvv");
-            return <Text>{chat}</Text>;
-          })} */}
+          {chatroomData.map((chat, i) => {
+            if (chat.senderId === currentUserId) {
+              return <Sender msg={chat.text} key={i} />;
+            } else {
+              return <Receiver msg={chat.text} key={i} />;
+            }
+          })}
         </View>
       </ScrollView>
 
@@ -102,8 +119,8 @@ const ChatRoom = (props) => {
             onChangeText={MsgChangeHandler}
             placeholder="Write your message"
           />
-          <TouchableOpacity onPress={() => sendMessage(msg)}>
-            <Text>Send</Text>
+          <TouchableOpacity onPress={() => onMessageSend(msg)}>
+           <MaterialIcons name="send" size={32}/>
           </TouchableOpacity>
         </View>
       </View>
@@ -113,31 +130,31 @@ const ChatRoom = (props) => {
 
 const styles = StyleSheet.create({
   textBoxArea: {
-    position: "absolute",
-    bottom: 0,
     width: "100%",
   },
   messageRecieverBox: {
-    paddingHorizontal: 10,
-    alignItems:'flex-start',
-    paddingVertical: 4,
+    paddingHorizontal: 12,
+    alignItems: "flex-start",
+    paddingVertical: 8,
     marginHorizontal: 10,
     maxWidth: "80%",
     width: "max-content",
     marginVertical: 8,
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 20,
+    borderTopLeftRadius: 4,
   },
   messageSenderBox: {
     paddingHorizontal: 10,
-    alignSelf:'flex-end',
+    alignSelf: "flex-end",
     paddingVertical: 4,
     marginHorizontal: 10,
     maxWidth: "80%",
     width: "max-content",
     marginVertical: 8,
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 20,
+    borderBottomRightRadius: 4,
   },
 });
 
