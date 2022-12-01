@@ -25,9 +25,9 @@ const Inbox = (props) => {
     });
   }, []);
   useEffect(() => {
-    AsyncStorage.getItem("userId").then((userId) => {
+    if (currentUserId) {
       AsyncStorage.getItem("token").then((token) => {
-        fetch(`${HOST}/api/chat/${userId}`, {
+        fetch(`${HOST}/api/chat/${userId}/${currentUserId}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -37,8 +37,8 @@ const Inbox = (props) => {
           .then((res) => res.json())
           .then((res) => setChats(res));
       });
-    });
-  }, []);
+    }
+  }, [currentUserId]);
   useEffect(() => {
     if (props.route && props.route.params) {
       const { activeUserId } = props.route.params;
@@ -68,6 +68,7 @@ const Inbox = (props) => {
         body: JSON.stringify({
           chatId: userId,
           senderId: currentUserId,
+          receiverId: userId,
           text: msg,
         }),
       });
@@ -97,7 +98,7 @@ const Inbox = (props) => {
   };
 
   return (
-    <View style={{flex:1}}>
+    <View style={{ flex: 1 }}>
       {userId ? (
         <ChatRoom
           sendMessage={sendMessage}
