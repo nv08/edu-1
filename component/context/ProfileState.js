@@ -3,10 +3,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState } from "react";
 
 import profileContext from "./profileContext";
+import { HOST } from "../../src/constants";
 
 const ProfileState = (props) => {
-
-  const host = "http://192.168.1.178:5000";
 
   const profileInitial = [];
 
@@ -15,7 +14,7 @@ const ProfileState = (props) => {
   //fetch one user profile
 
   const userProfile = async (id) => {
-    const response = await fetch(`${host}/api/profile/fetchuserprofile/${id}`, {
+    const response = await fetch(`${HOST}/api/profile/fetchuserprofile/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -32,7 +31,7 @@ const ProfileState = (props) => {
   //here is the fetch all profiles
   const getProfile = async () => {
     const response = await fetch(
-      `${host}/api/profile/fetchallprofiles`,
+      `${HOST}/api/profile/fetchallprofiles`,
       {
         method: "GET",
         headers: {
@@ -57,7 +56,7 @@ const ProfileState = (props) => {
     skills,
     description
   ) => {
-    const response = await fetch(`${host}/api/profile/addprofiles`, {
+    const response = await fetch(`${HOST}/api/profile/addprofiles`, {
       method: "POST",
 
       headers: {

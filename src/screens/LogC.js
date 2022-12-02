@@ -10,6 +10,7 @@ import {
   import AsyncStorage from "@react-native-async-storage/async-storage";
   import React, { useState } from "react";
   import SubmitBu from "../components/SubmitBu";
+import { HOST } from "../constants";
   
   
   
@@ -22,7 +23,7 @@ import {
   
     const HandleSubmit = async () => {
       setLoading(true);
-      const response = await fetch(`http://192.168.1.178:5000/api/auth/login`, {
+      const response = await fetch(`${HOST}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,6 +36,8 @@ import {
       console.log(json);
       if (json.success) {
         await AsyncStorage.setItem("token", json.authtoken);
+        await AsyncStorage.setItem("userId", json.data.user.id);
+        await AsyncStorage.setItem("name", json.data.user.name);
         Alert.alert("Success!", "Sign in successfully. Welcome!", [
           {
             text: "Ok",

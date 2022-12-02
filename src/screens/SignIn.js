@@ -11,6 +11,7 @@ import {
   import React, { useState, useContext, useEffect } from "react";
   
   import SubmitBu from "../components/SubmitBu";
+import { HOST } from "../constants";
   
   const SignIn = ({ navigation }) => {
     const { id } = useState(id);
@@ -23,7 +24,7 @@ import {
       setLoading(true);
       try {
         const response = await fetch(
-          `http://192.168.1.178:5000/api/auth/login`,
+          `${HOST}/api/auth/login`,
           {
             method: "POST",
             headers: {
@@ -42,7 +43,8 @@ import {
   
         if (json.success) {
           await AsyncStorage.setItem("token", json.authtoken);
-  
+          await AsyncStorage.setItem("userId", json.data.user.id);
+          await AsyncStorage.setItem("name", json.data.user.name);
          
           navigation.navigate("Profile");
           Alert.alert("Success!", "Sign in successfully. Welcome!", [

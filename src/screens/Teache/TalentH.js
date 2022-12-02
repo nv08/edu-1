@@ -4,54 +4,110 @@ import {
   View,
   TextInput,
   FlatList,
+  TouchableOpacity,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useState, } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import CMenu from "../../components/CMenu";
+import { HOST } from "../../constants";
+import { useNavigation } from "@react-navigation/native";
 
 const TalentH = () => {
   const [profiles, setProfiles] = useState([]);
-
+  const navigation = useNavigation();
   const [skillsTerm, setSkills] = useState("");
   const [rollnoTerm, setRollno] = useState("");
   const [cityTerm, setCity] = useState("");
 
   const filterData = () => {
-    AsyncStorage.getItem("token").then(token => {
-      fetch(
-        `http://192.168.1.178:5000/api/profile/fetchallprofiles`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "auth-token": token,
-          },
-          body: JSON.stringify({
-            skills: skillsTerm,
-            rollno: rollnoTerm,
-            city: cityTerm,
-          }),
-        }
-      ).then(res => res.json())
-      .then((res) => setProfiles(res));
+    AsyncStorage.getItem("token").then((token) => {
+      fetch(`${HOST}/api/profile/fetchallprofiles`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": token,
+        },
+        body: JSON.stringify({
+          skills: skillsTerm,
+          rollno: rollnoTerm,
+          city: cityTerm,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => setProfiles(res));
     });
-    
-
-    // const responseJson = await response.json();
-    // console.log(responseJson);
-    // setProfiles(responseJson);
   };
-if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
-  filterData();
-}
 
-  //  useEffect(() => {
-  //   getProfile();
-  // }, []);
+  // useEffect(() => {
+  //   if (profiles.length > 0) {
+  //     sock.emit("new-user-add", profiles[0].user);
+  //   }
+  // }, [profiles]);
 
- 
+  // useEffect(() => {
+  //   sock.connect();
+  //   const receiveMsg = () => {
+  //     c
+  //   };
+  //   receiveMsg();
+  //   return () => {
+  //     sock.off("recieve-message");
+  //   };
+  // }, [sock]);
 
-  
+  useEffect(() => {
+    if (profiles.length === 0) {
+      filterData();
+    }
+  }, [profiles]);
+  const isChatExist = async (teacherId, stuId) => {
+    const token = await AsyncStorage.getItem("token");
+    const data = await fetch(`${HOST}/api/chat/find/${teacherId}/${stuId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+    });
+
+    const result = await data.json();
+    if (result) return true;
+    return false;
+  };
+
+  const handleChatNowHandler = async (item) => {
+    const studentId = item.user;
+    const studentName = item.cname;
+    AsyncStorage.getItem("userId").then((teacherId) => {
+      AsyncStorage.getItem("name").then(async (teacherName) => {
+        // check if chat exist, if not then create chat
+        const chatExist = await isChatExist(teacherId, studentId);
+        if (!chatExist) {
+          AsyncStorage.getItem("token").then((token) => {
+            fetch(`${HOST}/api/chat/createchat`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "auth-token": token,
+              },
+              body: JSON.stringify({
+                senderDetails: {
+                  id: teacherId,
+                  name: teacherName,
+                },
+                receiverDetails: {
+                  id: studentId,
+                  name: studentName,
+                },
+              }),
+            });
+          });
+        }
+        navigation.navigate("Inbox", { activeUserId: studentId });
+      });
+    });
+  };
+
   return (
     <View
       style={{
@@ -101,103 +157,112 @@ if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
           />
         </View>
       </View>
-      {
-        profiles.length > 0 ? (
-      <FlatList
-        data={profiles}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <View key={item._id}>
-            <View style={styles.boxes}>
-              <View>
-                <Text
-                  style={{
-                    textAlign: "center",
-                    fontSize: 20,
+      {profiles.length > 0 ? (
+        <FlatList
+          data={profiles}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <View key={item._id}>
+              <View style={styles.boxes}>
+                <View>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      fontSize: 20,
 
-                    color: "black",
-                  }}
-                >
-                  {item.cname}
-                </Text>
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingHorizontal: 5,
-                    paddingVertical: 3,
-                    alignItems: "center",
-                  }}
-                >
-                 <Text>Email</Text>
-                  <Text style={styles.textStyle}>{item.email} </Text>
-                </View>
+                      color: "black",
+                    }}
+                  >
+                    {item.cname}
+                  </Text>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 5,
+                      paddingVertical: 3,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text>Email</Text>
+                    <Text style={styles.textStyle}>{item.email} </Text>
+                  </View>
 
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingHorizontal: 5,
-                    paddingVertical: 3,
-                    alignItems: "center",
-                  }}
-                >
-                 <Text>City</Text>
-                  <Text style={styles.textStyle}>{item.city} </Text>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 5,
+                      paddingVertical: 3,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text>City</Text>
+                    <Text style={styles.textStyle}>{item.city} </Text>
+                  </View>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 5,
+                      paddingVertical: 3,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text>Roll No.</Text>
+                    <Text style={styles.textStyle}>{item.rollno}</Text>
+                  </View>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 5,
+                      paddingVertical: 3,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text>Address</Text>
+                    <Text style={styles.textStyle}>{item.address}</Text>
+                  </View>
+                  <View
+                    style={{
+                      display: "flex",
+                      paddingHorizontal: 5,
+                      paddingVertical: 3,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={styles.textStyle0}>Subjects</Text>
+                    <Text style={styles.textStyle}>{item.skills}</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.buttonStyles}
+                    onPress={() => handleChatNowHandler(item)}
+                  >
+                    <Text> Chat Now</Text>
+                  </TouchableOpacity>
                 </View>
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingHorizontal: 5,
-                    paddingVertical: 3,
-                    alignItems: "center",
-                  }}
-                >
-                 <Text>Roll No.</Text>
-                  <Text style={styles.textStyle}>{item.rollno}</Text>
-                </View>
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingHorizontal: 5,
-                    paddingVertical: 3,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text>Address</Text>
-                  <Text style={styles.textStyle}>{item.address}</Text>
-                </View>
-                <View
-                  style={{
-                    display: "flex",
-                    paddingHorizontal: 5,
-                    paddingVertical: 3,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text style={styles.textStyle0}>Subjects</Text>
-                  <Text style={styles.textStyle}>{item.skills}</Text>
-                </View>
-
-               
               </View>
             </View>
-          </View>
-        )}
-        onEndReachedThreshold={0.01}
-      />
-      )
-      :
-      (
-          <Text style={{color:"black",textAlign:'center',fontSize:15,fontWeight:'bold', }}>No Results Found...</Text>
-      )
-      }
+          )}
+          onEndReachedThreshold={0.01}
+        />
+      ) : (
+        <Text
+          style={{
+            color: "black",
+            textAlign: "center",
+            fontSize: 15,
+            fontWeight: "bold",
+          }}
+        >
+          No Results Found...
+        </Text>
+      )}
       {/* </ScrollView> */}
       <View>
         <CMenu />
@@ -207,13 +272,7 @@ if (skillsTerm === "" && rollnoTerm === "" && cityTerm === "") {
 };
 
 const styles = StyleSheet.create({
-  boxes: {
-   
-
-   
-   
-  
-  },
+  boxes: {},
 
   CliImg: {
     width: 50,
@@ -227,12 +286,12 @@ const styles = StyleSheet.create({
 
     fontSize: 15,
   },
-  rowView:{
-    width: '100%',
-    flexDirection: 'row',
-    alignItems:'center',
-    justifyContent:'space-evenly'
-  }, 
+  rowView: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+  },
   textStyle0: {
     fontSize: 17,
     color: "black",
@@ -259,6 +318,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     height: 40,
     backgroundColor: "white",
+  },
+  buttonStyles: {
+    alignSelf: "center",
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
   },
 });
 export default TalentH;

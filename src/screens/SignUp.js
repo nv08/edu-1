@@ -10,6 +10,7 @@ import {
 import React, { useState } from "react";
 
 import SubmitBu from "../components/SubmitBu";
+import { HOST } from "../constants";
 
 const SignUp = ({ navigation }) => {
   const [cname, setcName] = useState("");
@@ -23,7 +24,7 @@ const SignUp = ({ navigation }) => {
   const HandleSubmit = async () => {
     setLoading(true);
     const response = await fetch(
-      `http://192.168.1.178:5000/api/auth/newuser`,
+      `${HOST}/api/auth/newuser`,
 
       {
         method: "POST",
