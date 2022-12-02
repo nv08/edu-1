@@ -24,6 +24,7 @@ const Inbox = (props) => {
       setCurrentUserId(activeUserId);
       sock.emit("new-user-add", activeUserId);
     });
+    return () => sock.off("new-user-add");
   }, []);
   useEffect(() => {
     if (currentUserId) {
@@ -49,7 +50,10 @@ const Inbox = (props) => {
 
   useEffect(() => {
     sock.connect();
-    return () => sock.off();
+    return () => {
+      sock.off("new-user-add");
+      sock.off("send-message");
+    }
   }, []);
 
   const sendMessage = (msg) => {
@@ -100,7 +104,7 @@ const Inbox = (props) => {
           key={index}
           style={styles.item}
         >
-          <Text style={{fontSize: 20, color:'white'}}>{member.name}</Text>
+          <Text style={{ fontSize: 20, color: 'white' }}>{member.name}</Text>
         </TouchableOpacity>
       </View>
     );
