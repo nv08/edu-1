@@ -48,6 +48,7 @@ const ChatRoom = (props) => {
         setChatroomData([...chatroomData, msgObj]);
       }
     });
+    return () => socket.off("receive-message");
   }, [chatroomData, activeUserId, currentUserId]);
 
   const Receiver = ({ msg }) => {
