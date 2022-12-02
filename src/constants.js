@@ -1,1 +1,1 @@
-export const HOST = "https://eduback.onrender.com";
+export const HOST = "http://192.168.1.178:5000";
