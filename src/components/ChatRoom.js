@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -19,6 +19,7 @@ const ChatRoom = (props) => {
   const MsgChangeHandler = (e) => {
     setMsg(e);
   };
+  const scrollViewRef = useRef();
 
   useEffect(() => {
     AsyncStorage.getItem("userId").then((userId) => {
@@ -45,11 +46,14 @@ const ChatRoom = (props) => {
           receiverId: payload.receiverId,
           text: payload.data,
         };
-        setChatroomData([...chatroomData, msgObj]);
+        setChatroomData((chatroomData) => [...chatroomData, msgObj]);
       }
     });
-    return () => socket.off("receive-message");
-  }, [chatroomData, activeUserId, currentUserId]);
+    return () => {
+      socket.off("receive-message");
+      setChatroomData([]);
+    };
+  }, [activeUserId]);
 
   const Receiver = ({ msg }) => {
     return (
@@ -80,7 +84,13 @@ const ChatRoom = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView style={{ marginTop: 80 }}>
+      <ScrollView
+        style={{ marginTop: 80 }}
+        ref={scrollViewRef}
+        onContentSizeChange={() =>
+          scrollViewRef.current.scrollToEnd({ animated: true })
+        }
+      >
         <View>
           {chatroomData.map((chat, i) => {
             if (chat.senderId === currentUserId) {
@@ -113,6 +123,7 @@ const ChatRoom = (props) => {
               width: "100%",
               backgroundColor: "white",
             }}
+            autoFocus={true}
             autoCapitalize="none"
             autoCorrect={false}
             value={msg}
@@ -120,7 +131,7 @@ const ChatRoom = (props) => {
             onChangeText={MsgChangeHandler}
             placeholder="Write your message"
           />
-          <TouchableOpacity onPress={() => onMessageSend(msg)}>
+          <TouchableOpacity onPress={() => msg && onMessageSend(msg)}>
            <MaterialIcons name="send" size={32}/>
           </TouchableOpacity>
         </View>
@@ -135,10 +146,10 @@ const styles = StyleSheet.create({
   },
   messageRecieverBox: {
     paddingHorizontal: 12,
-    alignItems: "flex-start",
     paddingVertical: 8,
+    alignSelf: "flex-start",
+    maxWidth: "80%",
     marginHorizontal: 10,
-    width: "80%",
     marginVertical: 8,
     borderWidth: 1,
     borderRadius: 20,
@@ -147,9 +158,9 @@ const styles = StyleSheet.create({
   messageSenderBox: {
     paddingHorizontal: 10,
     alignSelf: "flex-end",
+    maxWidth: "80%",
     paddingVertical: 4,
     marginHorizontal: 10,
-    width: "80%",
     marginVertical: 8,
     borderWidth: 1,
     borderRadius: 20,
