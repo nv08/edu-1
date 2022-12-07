@@ -20,13 +20,6 @@ const Inbox = (props) => {
   const [currentUserId, setCurrentUserId] = useState("");
 
   useEffect(() => {
-    AsyncStorage.getItem("userId").then((activeUserId) => {
-      setCurrentUserId(activeUserId);
-      sock.emit("new-user-add", activeUserId);
-    });
-    return () => sock.off("new-user-add");
-  }, []);
-  useEffect(() => {
     if (currentUserId) {
       AsyncStorage.getItem("token").then((token) => {
         fetch(`${HOST}/api/chat/${currentUserId}`, {
@@ -49,11 +42,14 @@ const Inbox = (props) => {
   }, [props]);
 
   useEffect(() => {
-    sock.connect();
-    return () => {
-      sock.off("new-user-add");
-      sock.off("send-message");
+    if (sock && !sock.isConnected) {
+      sock.connect();
+      AsyncStorage.getItem("userId").then((activeUserId) => {
+        setCurrentUserId(activeUserId);
+        sock.emit("new-user-add", activeUserId);
+      });
     }
+    return () => sock.disconnect();
   }, []);
 
   const sendMessage = (msg) => {
@@ -104,7 +100,7 @@ const Inbox = (props) => {
           key={index}
           style={styles.item}
         >
-          <Text style={{ fontSize: 20, color: 'white' }}>{member.name}</Text>
+          <Text style={{ fontSize: 20, color: "white" }}>{member.name}</Text>
         </TouchableOpacity>
       </View>
     );
