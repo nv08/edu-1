@@ -1,4 +1,4 @@
-import { View, Text, Alert } from "react-native";
+import { View, Text, Alert, PermissionsAndroid } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 
@@ -10,18 +10,66 @@ const ProfileState = (props) => {
   const profileInitial = [];
 
   const [profiles, setProfiles] = useState(profileInitial);
-  const [location, setLocation] = useState();
+  const [location, setLocation] = useState(undefined);
   //fetch one user profile
 
-  useEffect(() => {
-    if (!location) {
-      getLocationCoordinates().then((coordinates) => {
+  const checkLocationPermission = async () => {
+    try {
+      const hasPermission = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      );
+      if (!hasPermission) {
+        const permissionGranted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+        );
+
+        if (permissionGranted) {
+          const coordinates = await getLocationCoordinates();
+          if (coordinates) {
+            setLocation(coordinates);
+          }
+        }
+      } else {
+        const coordinates = await getLocationCoordinates();
         if (coordinates) {
           setLocation(coordinates);
         }
-      });
+      }
+    } catch (err) {
+      console.log("permission not granted");
+      setLocation(null);
+    }
+  };
+  useEffect(() => {
+    if (location === undefined) {
+      checkLocationPermission();
+    }
+    if (location && location[0] && location[1]) {
+      UpdateLocation();
     }
   }, [location]);
+
+  const UpdateLocation = async () => {
+    console.log(location, 'feh');
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if(!token) return;
+      const response =  await fetch(`${HOST}/api/profile/updateLocation`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": token
+        },
+        body: JSON.stringify({
+          longitude: location[0],
+          latitude: location[1],
+        }),
+      });
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const userProfile = async (id) => {
     const response = await fetch(`${HOST}/api/profile/fetchuserprofile/${id}`, {
@@ -40,16 +88,13 @@ const ProfileState = (props) => {
   // fetch all user profiles
   //here is the fetch all profiles
   const getProfile = async () => {
-    const response = await fetch(
-      `${HOST}/api/profile/fetchallprofiles`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": await AsyncStorage.getItem("token"),
-        },
-      }
-    );
+    const response = await fetch(`${HOST}/api/profile/fetchallprofiles`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": await AsyncStorage.getItem("token"),
+      },
+    });
     const json = await response.json();
     //console.log(json)
     setProfiles(json);
