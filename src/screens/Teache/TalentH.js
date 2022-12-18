@@ -1,23 +1,21 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View, TextInput, FlatList } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import CMenu from "../../components/CMenu";
 import { HOST } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
+import SingleForm from "./SingleForm";
+import profileContext from "../../../component/context/profileContext";
 
 const TalentH = () => {
-  const [profiles, setProfiles] = useState([]);
+  const [profiles, setProfiles] = useState();
   const navigation = useNavigation();
   const [skillsTerm, setSkills] = useState("");
   const [rollnoTerm, setRollno] = useState("");
   const [cityTerm, setCity] = useState("");
+  const [nearbyProfiles, setNearbyProfiles] = useState([]);
+  const { location } = useContext(profileContext);
+  const [filterExist, setFilterExist] = useState(false);
 
   const filterData = () => {
     AsyncStorage.getItem("token").then((token) => {
@@ -38,6 +36,25 @@ const TalentH = () => {
     });
   };
 
+  const fetchNearbyProfiles = () => {
+    if (location)
+      AsyncStorage.getItem("token").then((token) => {
+        fetch(`${HOST}/api/profile/getNearbyProfiles`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": token,
+          },
+          body: JSON.stringify({
+            longitude: location[0],
+            latitude: location[1],
+          }),
+        })
+          .then((res) => res.json())
+          .then((res) => setNearbyProfiles(res));
+      });
+  };
+
   // useEffect(() => {
   //   if (profiles.length > 0) {
   //     sock.emit("new-user-add", profiles[0].user);
@@ -56,10 +73,19 @@ const TalentH = () => {
   // }, [sock]);
 
   useEffect(() => {
-    if (profiles.length === 0) {
+    fetchNearbyProfiles();
+  }, [location]);
+
+  useEffect(() => {
+    // if someone is using filter then use /fetchAllProfiles api
+    if (skillsTerm || rollnoTerm || cityTerm) {
+      setFilterExist(true);
       filterData();
+    } else {
+      setFilterExist(false);
     }
-  }, [profiles]);
+  }, [skillsTerm, rollnoTerm, cityTerm]);
+
   const isChatExist = async (teacherId, stuId) => {
     const token = await AsyncStorage.getItem("token");
     const data = await fetch(`${HOST}/api/chat/find/${teacherId}/${stuId}`, {
@@ -108,6 +134,42 @@ const TalentH = () => {
     });
   };
 
+  // adding comment to a particular profile api
+  const handleSubmitComment = (id, comment) => {
+    if (!id || !comment) return;
+    AsyncStorage.getItem("name").then(async (teacherName) => {
+      AsyncStorage.getItem("token").then((token) => {
+        fetch(`${HOST}/api/profile/addComment`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": token,
+          },
+          body: JSON.stringify({
+            id: id,
+            comment: comment,
+            commentBy: teacherName,
+          }),
+        });
+      });
+    });
+  };
+
+  const renderNoResult = () => {
+    return (
+      <Text
+        style={{
+          color: "black",
+          textAlign: "center",
+          fontSize: 15,
+          fontWeight: "bold",
+        }}
+      >
+        No Results Found...
+      </Text>
+    );
+  };
+
   return (
     <View
       style={{
@@ -126,7 +188,6 @@ const TalentH = () => {
             placeholder="Type Subject..."
             onChangeText={(actualdata) => {
               setSkills(actualdata);
-              filterData();
             }}
           />
         </View>
@@ -139,7 +200,6 @@ const TalentH = () => {
             placeholder="Type City..."
             onChangeText={(actualdata) => {
               setCity(actualdata);
-              filterData();
             }}
           />
         </View>
@@ -152,117 +212,26 @@ const TalentH = () => {
             placeholder="Type roll no.."
             onChangeText={(actualdata) => {
               setRollno(actualdata);
-              filterData();
             }}
           />
         </View>
       </View>
-      {profiles.length > 0 ? (
-        <FlatList
-          data={profiles}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <View key={item._id}>
-              <View style={styles.boxes}>
-                <View>
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      fontSize: 20,
-
-                      color: "black",
-                    }}
-                  >
-                    {item.cname}
-                  </Text>
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      paddingHorizontal: 5,
-                      paddingVertical: 3,
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text>Email</Text>
-                    <Text style={styles.textStyle}>{item.email} </Text>
-                  </View>
-
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      paddingHorizontal: 5,
-                      paddingVertical: 3,
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text>City</Text>
-                    <Text style={styles.textStyle}>{item.city} </Text>
-                  </View>
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      paddingHorizontal: 5,
-                      paddingVertical: 3,
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text>Roll No.</Text>
-                    <Text style={styles.textStyle}>{item.rollno}</Text>
-                  </View>
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      paddingHorizontal: 5,
-                      paddingVertical: 3,
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text>Address</Text>
-                    <Text style={styles.textStyle}>{item.address}</Text>
-                  </View>
-                  <View
-                    style={{
-                      display: "flex",
-                      paddingHorizontal: 5,
-                      paddingVertical: 3,
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text style={styles.textStyle0}>Subjects</Text>
-                    <Text style={styles.textStyle}>{item.skills}</Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.buttonStyles}
-                    onPress={() => handleChatNowHandler(item)}
-                  >
-                    <Text> Chat Now</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          )}
-          onEndReachedThreshold={0.01}
-        />
-      ) : (
-        <Text
-          style={{
-            color: "black",
-            textAlign: "center",
-            fontSize: 15,
-            fontWeight: "bold",
-          }}
-        >
-          No Results Found...
-        </Text>
-      )}
+      <FlatList
+        removeClippedSubviews={false}
+        data={filterExist ? profiles : nearbyProfiles}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <View key={item._id}>
+            <SingleForm
+              item={item}
+              handleChatNowHandler={handleChatNowHandler}
+              handleSubmitComment={handleSubmitComment}
+            />
+          </View>
+        )}
+        onEndReachedThreshold={0.01}
+        ListEmptyComponent={renderNoResult}
+      />
       {/* </ScrollView> */}
       <View>
         <CMenu />
@@ -318,12 +287,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     height: 40,
     backgroundColor: "white",
-  },
-  buttonStyles: {
-    alignSelf: "center",
-    borderWidth: 1,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
   },
 });
 export default TalentH;

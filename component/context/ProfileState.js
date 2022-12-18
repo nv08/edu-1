@@ -1,17 +1,27 @@
 import { View, Text, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import profileContext from "./profileContext";
 import { HOST } from "../../src/constants";
+import { getLocationCoordinates } from "../../src/helpers";
 
 const ProfileState = (props) => {
-
   const profileInitial = [];
 
   const [profiles, setProfiles] = useState(profileInitial);
-
+  const [location, setLocation] = useState();
   //fetch one user profile
+
+  useEffect(() => {
+    if (!location) {
+      getLocationCoordinates().then((coordinates) => {
+        if (coordinates) {
+          setLocation(coordinates);
+        }
+      });
+    }
+  }, [location]);
 
   const userProfile = async (id) => {
     const response = await fetch(`${HOST}/api/profile/fetchuserprofile/${id}`, {
@@ -73,6 +83,7 @@ const ProfileState = (props) => {
         address,
         skills,
         description,
+        location,
       }),
     });
     //const json = response.json()
@@ -102,6 +113,7 @@ const ProfileState = (props) => {
     <profileContext.Provider
       value={{
         profiles,
+        location,
         addProfile,
         userProfile,
         getProfile,
