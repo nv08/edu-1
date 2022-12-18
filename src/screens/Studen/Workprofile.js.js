@@ -22,13 +22,19 @@ const wait = (timeout) => {
 };
 
 const WorkProfile = () => {
-  const { profiles, userProfile } = useContext(profileContext);
+  const { profiles, userProfile, location, updateLocation } =
+    useContext(profileContext);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     userProfile();
-    //console.log(userProfile)
   }, []);
+
+  useEffect(() => {
+    if (location) {
+      updateLocation();
+    }
+  }, [location]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

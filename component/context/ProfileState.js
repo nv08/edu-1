@@ -44,28 +44,23 @@ const ProfileState = (props) => {
     if (location === undefined) {
       checkLocationPermission();
     }
-    if (location && location[0] && location[1]) {
-      UpdateLocation();
-    }
   }, [location]);
 
-  const UpdateLocation = async () => {
-    console.log(location, 'feh');
+  const updateLocation = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
-      if(!token) return;
-      const response =  await fetch(`${HOST}/api/profile/updateLocation`, {
+      if (!token) return;
+      const response = await fetch(`${HOST}/api/profile/updateLocation`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "auth-token": token
+          "auth-token": token,
         },
         body: JSON.stringify({
           longitude: location[0],
           latitude: location[1],
         }),
       });
-      console.log(response);
     } catch (err) {
       console.log(err);
     }
@@ -162,6 +157,7 @@ const ProfileState = (props) => {
         addProfile,
         userProfile,
         getProfile,
+        updateLocation,
       }}
     >
       {props.children}

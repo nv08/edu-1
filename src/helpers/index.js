@@ -1,4 +1,4 @@
-import { PermissionsAndroid } from "react-native";
+import { Alert, Linking } from "react-native";
 import GetLocation from "react-native-get-location";
 
 export const getLocationCoordinates = async () => {
@@ -11,6 +11,17 @@ export const getLocationCoordinates = async () => {
       return [longitude, latitude];
     })
     .catch((error) => {
-      console.warn(error);
+      // case if location is turned off
+      Alert.alert("Location", "Please turn on the location", [
+        {
+          text: "turn on",
+          onPress: () => Linking.sendIntent('android.settings.LOCATION_SOURCE_SETTINGS'),
+          style: "cancel",
+        },
+        {
+          text: "cancel",
+          onPress: () => null,
+        },
+      ]);
     });
 };
