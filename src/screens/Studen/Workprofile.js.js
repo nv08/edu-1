@@ -16,6 +16,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import io from "socket.io-client";
 import { HOST } from "../../constants";
+import ChatRoomState from "../../../component/context/chatroomState";
 //import axios from "axios";
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -43,129 +44,131 @@ const WorkProfile = () => {
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "space-between",
-      }}
-    >
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={userProfile} />
-        }
+    <ChatRoomState>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "space-between",
+        }}
       >
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={userProfile} />
+          }
+        >
+          <View>
+            {!profiles[0] ? <UserForm /> : null}
+            {profiles?.map((item) => {
+              return (
+                <View key={item._id}>
+                  <UserForm>
+                    <View>
+                      <View style={{ marginTop: 10 }}>
+                        <Text
+                          style={{
+                            textAlign: "center",
+                            fontSize: 20,
+
+                            color: "black",
+                          }}
+                        >
+                          {item.cname}
+                        </Text>
+                      </View>
+
+                      <View style={styles.Boxe}>
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingHorizontal: 5,
+                            paddingVertical: 3,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text>Email</Text>
+                          <Text style={styles.ISle}>{item.email}</Text>
+                        </View>
+
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingHorizontal: 5,
+                            paddingVertical: 3,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text>Phone</Text>
+                          <Text style={styles.ISle}>{item.phone}</Text>
+                        </View>
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingHorizontal: 5,
+                            paddingVertical: 3,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text>City</Text>
+                          <Text style={styles.ISle}>{item.city}</Text>
+                        </View>
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingHorizontal: 5,
+                            paddingVertical: 3,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text>Roll No</Text>
+                          <Text style={styles.ISle}>{item.rollno}</Text>
+                        </View>
+                        <View
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingHorizontal: 5,
+                            paddingVertical: 3,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text>Address</Text>
+                          <Text style={styles.ISle}>{item.address} </Text>
+                        </View>
+                      </View>
+                      <View
+                        style={{
+                          borderBottomColor: "grey",
+                          borderBottomWidth: 1,
+                        }}
+                      />
+                      <View style={styles.Dist}>
+                        <Text style={styles.ItSle}>Subjects</Text>
+                        <Text style={styles.ISle}>{item.skills}</Text>
+
+                        <Text style={styles.ItSle}>Description</Text>
+                        <Text style={styles.ISle}>{item.description}</Text>
+                      </View>
+                    </View>
+                  </UserForm>
+                </View>
+              );
+            })}
+          </View>
+        </ScrollView>
         <View>
-          {!profiles[0] ? <UserForm /> : null}
-          {profiles?.map((item) => {
-            return (
-              <View key={item._id}>
-                <UserForm>
-                  <View>
-                    <View style={{ marginTop: 10 }}>
-                      <Text
-                        style={{
-                          textAlign: "center",
-                          fontSize: 20,
-
-                          color: "black",
-                        }}
-                      >
-                        {item.cname}
-                      </Text>
-                    </View>
-
-                    <View style={styles.Boxe}>
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingHorizontal: 5,
-                          paddingVertical: 3,
-                          alignItems: "center",
-                        }}
-                      >
-                        <Text>Email</Text>
-                        <Text style={styles.ISle}>{item.email}</Text>
-                      </View>
-
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingHorizontal: 5,
-                          paddingVertical: 3,
-                          alignItems: "center",
-                        }}
-                      >
-                        <Text>Phone</Text>
-                        <Text style={styles.ISle}>{item.phone}</Text>
-                      </View>
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingHorizontal: 5,
-                          paddingVertical: 3,
-                          alignItems: "center",
-                        }}
-                      >
-                        <Text>City</Text>
-                        <Text style={styles.ISle}>{item.city}</Text>
-                      </View>
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingHorizontal: 5,
-                          paddingVertical: 3,
-                          alignItems: "center",
-                        }}
-                      >
-                        <Text>Roll No</Text>
-                        <Text style={styles.ISle}>{item.rollno}</Text>
-                      </View>
-                      <View
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          paddingHorizontal: 5,
-                          paddingVertical: 3,
-                          alignItems: "center",
-                        }}
-                      >
-                        <Text>Address</Text>
-                        <Text style={styles.ISle}>{item.address} </Text>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        borderBottomColor: "grey",
-                        borderBottomWidth: 1,
-                      }}
-                    />
-                    <View style={styles.Dist}>
-                      <Text style={styles.ItSle}>Subjects</Text>
-                      <Text style={styles.ISle}>{item.skills}</Text>
-
-                      <Text style={styles.ItSle}>Description</Text>
-                      <Text style={styles.ISle}>{item.description}</Text>
-                    </View>
-                  </View>
-                </UserForm>
-              </View>
-            );
-          })}
+          <Menu />
         </View>
-      </ScrollView>
-      <View>
-        <Menu />
       </View>
-    </View>
+    </ChatRoomState>
   );
 };
 

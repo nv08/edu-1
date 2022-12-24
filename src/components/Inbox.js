@@ -1,23 +1,23 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Text,
   View,
   TouchableOpacity,
   FlatList,
   StyleSheet,
-  StatusBar,
 } from "react-native";
-import { io } from "socket.io-client";
 import { HOST } from "../constants";
-import ChatRoom from "./ChatRoom";
 import { MaterialIcons } from "@expo/vector-icons";
+import chatroomContext from "../../component/context/chatroomContext";
+import { useNavigation } from "@react-navigation/native";
+import { Badge } from "react-native-paper";
 
-const sock = io(HOST);
 const Inbox = (props) => {
-  const [activeUserId, setActiveUserId] = useState("");
   const [chats, setChats] = useState([]);
-  const [currentUserId, setCurrentUserId] = useState("");
+  const { currentUserId, handleChatClick, notification } =
+    useContext(chatroomContext);
+  const navigator = useNavigation();
 
   useEffect(() => {
     if (currentUserId) {
@@ -34,46 +34,17 @@ const Inbox = (props) => {
       });
     }
   }, [currentUserId]);
+
+  // setting the clicked user from inbox
   useEffect(() => {
     if (props.route && props.route.params) {
       const { activeUserId } = props.route.params;
-      setActiveUserId(activeUserId || "");
+      if (activeUserId) {
+        handleChatClick(activeUserId);
+        navigator.navigate("Chat");
+      }
     }
   }, [props]);
-
-  useEffect(() => {
-    if (sock && !sock.isConnected) {
-      sock.connect();
-      AsyncStorage.getItem("userId").then((activeUserId) => {
-        setCurrentUserId(activeUserId);
-        sock.emit("new-user-add", activeUserId);
-      });
-    }
-    return () => sock.disconnect();
-  }, []);
-
-  const sendMessage = (msg) => {
-    sock.emit("send-message", {
-      receiverId: activeUserId,
-      data: msg,
-      senderId: currentUserId,
-    });
-    AsyncStorage.getItem("token").then((token) => {
-      fetch(`${HOST}/api/message/sendmessage`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": token,
-        },
-        body: JSON.stringify({
-          chatId: activeUserId,
-          senderId: currentUserId,
-          receiverId: activeUserId,
-          text: msg,
-        }),
-      });
-    });
-  };
 
   const renderItem = ({ item: chat, index }) => {
     let member;
@@ -92,10 +63,18 @@ const Inbox = (props) => {
           justifyContent: "space-between",
         }}
       >
-        <MaterialIcons name="account-circle" size={64} />
+        <View style={{ position: "relative" }}>
+          <MaterialIcons name="account-circle" size={64} />
+          <Badge
+            children={notification[member.id]}
+            visible={Boolean(notification[member.id])}
+            style={{position: 'absolute', top: -5, right: -5}}
+          />
+        </View>
         <TouchableOpacity
           onPress={() => {
-            setActiveUserId(member.id);
+            handleChatClick(member.id);
+            navigator.navigate("Chat");
           }}
           key={index}
           style={styles.item}
@@ -108,17 +87,9 @@ const Inbox = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      {activeUserId ? (
-        <ChatRoom
-          sendMessage={sendMessage}
-          activeUserId={activeUserId}
-          socket={sock}
-        />
-      ) : (
-        <View style={styles.container}>
-          <FlatList data={chats} renderItem={renderItem} />
-        </View>
-      )}
+      <View style={styles.container}>
+        <FlatList data={chats} renderItem={renderItem} />
+      </View>
     </View>
   );
 };

@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -10,22 +10,28 @@ import {
 } from "react-native";
 import { HOST } from "../constants";
 import { MaterialIcons } from "@expo/vector-icons";
+import chatroomContext from "../../component/context/chatroomContext";
 
 const ChatRoom = (props) => {
-  const { sendMessage, activeUserId, socket } = props;
-  const [currentUserId, setCurrentUserId] = useState("");
+  const {
+    currentUserId,
+    chatroomData,
+    setChatroomData,
+    activeUserId,
+    sendMessage,
+  } = useContext(chatroomContext);
   const [msg, setMsg] = useState("");
-  const [chatroomData, setChatroomData] = useState([]);
   const MsgChangeHandler = (e) => {
     setMsg(e);
   };
   const scrollViewRef = useRef();
 
+  
+  //fetching chat of particular person from DB
   useEffect(() => {
-    AsyncStorage.getItem("userId").then((userId) => {
-      setCurrentUserId(userId);
+    if (currentUserId) {
       AsyncStorage.getItem("token").then((token) => {
-        fetch(`${HOST}/api/message/${userId}/${activeUserId}`, {
+        fetch(`${HOST}/api/message/${currentUserId}/${activeUserId}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -33,27 +39,10 @@ const ChatRoom = (props) => {
           },
         })
           .then((res) => res.json())
-          .then((res) => setChatroomData(res)); //extract messages from here and set in chatroomdata);
+          .then((res) => setChatroomData([...res])); //extract messages from here and set in chatroomdata);
       });
-    });
+    }
   }, []);
-
-  useEffect(() => {
-    socket.on("recieve-message", (payload) => {
-      if (payload.senderId === activeUserId) {
-        const msgObj = {
-          senderId: payload.senderId,
-          receiverId: payload.receiverId,
-          text: payload.data,
-        };
-        setChatroomData((chatroomData) => [...chatroomData, msgObj]);
-      }
-    });
-    return () => {
-      socket.off("receive-message");
-      setChatroomData([]);
-    };
-  }, [activeUserId]);
 
   const Receiver = ({ msg }) => {
     return (
@@ -73,12 +62,6 @@ const ChatRoom = (props) => {
 
   const onMessageSend = (msg) => {
     sendMessage(msg);
-    const msgObj = {
-      senderId: currentUserId,
-      receiverId: activeUserId,
-      text: msg,
-    };
-    setChatroomData([...chatroomData, msgObj]);
     setMsg("");
   };
 
@@ -131,8 +114,8 @@ const ChatRoom = (props) => {
             onChangeText={MsgChangeHandler}
             placeholder="Write your message"
           />
-          <TouchableOpacity onPress={() => msg && onMessageSend(msg)}>
-           <MaterialIcons name="send" size={32}/>
+          <TouchableOpacity onPress={() => msg && onMessageSend(msg)} style={{position: 'absolute'}}>
+            <MaterialIcons name="send" size={32} />
           </TouchableOpacity>
         </View>
       </View>

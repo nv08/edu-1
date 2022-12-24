@@ -6,6 +6,7 @@ import { HOST } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
 import SingleForm from "./SingleForm";
 import profileContext from "../../../component/context/profileContext";
+import ChatroomState from "../../../component/context/chatroomState";
 
 const TalentH = () => {
   const [profiles, setProfiles] = useState();
@@ -171,72 +172,74 @@ const TalentH = () => {
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "space-between",
-      }}
-    >
-      {/* <ScrollView> */}
-      <View style={styles.Tcolor}>
-        <View style={styles.TalentP}>
-          <TextInput
-            style={styles.TalUp}
-            autoCapitalize="none"
-            autoCorrect={false}
-            value={skillsTerm}
-            placeholder="Type Subject..."
-            onChangeText={(actualdata) => {
-              setSkills(actualdata);
-            }}
-          />
-        </View>
-        <View style={styles.TalentP}>
-          <TextInput
-            style={styles.TalUp}
-            autoCapitalize="none"
-            autoCorrect={false}
-            value={cityTerm}
-            placeholder="Type City..."
-            onChangeText={(actualdata) => {
-              setCity(actualdata);
-            }}
-          />
-        </View>
-        <View style={styles.TalentP}>
-          <TextInput
-            style={styles.TalUp}
-            autoCapitalize="none"
-            autoCorrect={false}
-            value={rollnoTerm}
-            placeholder="Type roll no.."
-            onChangeText={(actualdata) => {
-              setRollno(actualdata);
-            }}
-          />
-        </View>
-      </View>
-      <FlatList
-        removeClippedSubviews={false}
-        data={filterExist ? profiles : nearbyProfiles}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <View key={item._id}>
-            <SingleForm
-              item={item}
-              handleChatNowHandler={handleChatNowHandler}
-              handleSubmitComment={handleSubmitComment}
+    <ChatroomState>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "space-between",
+        }}
+      >
+        {/* <ScrollView> */}
+        <View style={styles.Tcolor}>
+          <View style={styles.TalentP}>
+            <TextInput
+              style={styles.TalUp}
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={skillsTerm}
+              placeholder="Type Subject..."
+              onChangeText={(actualdata) => {
+                setSkills(actualdata);
+              }}
             />
           </View>
-        )}
-        onEndReachedThreshold={0.01}
-        ListEmptyComponent={renderNoResult}
-      />
-      {/* </ScrollView> */}
-      <View>
-        <CMenu />
+          <View style={styles.TalentP}>
+            <TextInput
+              style={styles.TalUp}
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={cityTerm}
+              placeholder="Type City..."
+              onChangeText={(actualdata) => {
+                setCity(actualdata);
+              }}
+            />
+          </View>
+          <View style={styles.TalentP}>
+            <TextInput
+              style={styles.TalUp}
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={rollnoTerm}
+              placeholder="Type roll no.."
+              onChangeText={(actualdata) => {
+                setRollno(actualdata);
+              }}
+            />
+          </View>
+        </View>
+        <FlatList
+          removeClippedSubviews={false}
+          data={filterExist ? profiles : nearbyProfiles}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <View key={item._id}>
+              <SingleForm
+                item={item}
+                handleChatNowHandler={handleChatNowHandler}
+                handleSubmitComment={handleSubmitComment}
+              />
+            </View>
+          )}
+          onEndReachedThreshold={0.01}
+          ListEmptyComponent={renderNoResult}
+        />
+        {/* </ScrollView> */}
+        <View>
+          <CMenu />
+        </View>
       </View>
-    </View>
+    </ChatroomState>
   );
 };
 

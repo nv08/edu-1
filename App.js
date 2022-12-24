@@ -15,7 +15,8 @@ import UserForm from "./src/components/UserForm";
 import AccountW from "./src/components/AccountW";
 import React from "react";
 import Inbox from "./src/components/Inbox";
-
+import ChatRoomState from "./component/context/chatroomState";
+import ChatRoom from "./src/components/ChatRoom";
 
 function App() {
   const Stack = createNativeStackNavigator();
@@ -39,12 +40,20 @@ function App() {
           component={SignIn}
         />
         <Stack.Screen
-          options={{ headerTitleAlign: "center", headerTransparent: true, headerTitle:"Teacher signup" }}
+          options={{
+            headerTitleAlign: "center",
+            headerTransparent: true,
+            headerTitle: "Teacher signup",
+          }}
           name="Hire Signup"
           component={SignC}
         />
         <Stack.Screen
-          options={{ headerTitleAlign: "center", headerTransparent: true, headerTitle:"Teacher Login" }}
+          options={{
+            headerTitleAlign: "center",
+            headerTransparent: true,
+            headerTitle: "Teacher Login",
+          }}
           name="Hire Login"
           component={LogC}
         />
@@ -64,7 +73,11 @@ function App() {
           component={WorkProfile}
         />
         <Stack.Screen
-          options={{ headerTitleAlign: "center", headerBackVisible: false, headerTitle:"Find student" }}
+          options={{
+            headerTitleAlign: "center",
+            headerBackVisible: false,
+            headerTitle: "Find student",
+          }}
           name="Find Talent"
           component={TalentH}
         />
@@ -90,7 +103,17 @@ function App() {
           name="Inbox"
           component={Inbox}
         />
-    
+
+        <Stack.Screen
+          options={{
+            headerTitleAlign: "center",
+            headerTransparent: true,
+            headerBackVisible: true,
+            title: "Chat",
+          }}
+          name="Chat"
+          component={ChatRoom}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -107,7 +130,9 @@ const styles = StyleSheet.create({
 export default () => {
   return (
     <ProfileState>
-      <App />
+      <ChatRoomState>
+        <App />
+      </ChatRoomState>
     </ProfileState>
   );
 };
